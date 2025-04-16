@@ -48,7 +48,29 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['INR', 'USD', 'EUR'],
         default: 'INR'
-    }
+    },
+    cart: [
+        {
+          PID: { type: String, required: true },
+          dateadded : {type: Date, required: true , default: Date.now}
+        }
+    ],
+    saved: [
+        {
+            PID: {type: String, required:true},
+            dateadded : {type: Date, required: true , default: Date.now}
+        }
+    ],
+    followers: [
+        {
+            id: {type:String, required: true},
+        }
+    ],
+    following: [
+        {
+            id: {type:String, required: true},
+        }
+    ]
 }, {
     timestamps: true
 });

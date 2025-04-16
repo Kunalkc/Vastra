@@ -1,8 +1,13 @@
 const mongoose = require("mongoose")
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt")  // dont need this in product schema
 
 const productSchema = new mongoose.Schema({
     Title: String,
+    
+    ID: {
+        type: String,
+        unique: true,
+    },
 
     ownerID:{
         type: String,
