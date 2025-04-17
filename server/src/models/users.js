@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
     name: String,
+    firstName: String,
+    lastName: String,
     email: {
         type: String,
         required: true,
@@ -31,10 +33,34 @@ const userSchema = new mongoose.Schema({
         min: 1,
         max: 120,
     },
+    phoneNumber: {
+        type: String,
+        validate: {
+            validator: function(v) {
+                return /\d{10,15}/.test(v);
+            },
+            message: props => `${props.value} is not a valid phone number!`
+        }
+    },
+    address: {
+        street: String,
+        city: String,
+        state: String,
+        country: String,
+        postalCode: String
+    },
     role: {
         type: String,
         enum: ["Designer", "Brand", "Admin", "Business", "Individual"],
         default: "buyer",
+    },
+    profilePicture: {
+        url: String,
+        public_id: String
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     },
     createdAt: {
         type: Date,
@@ -49,10 +75,41 @@ const userSchema = new mongoose.Schema({
         enum: ['INR', 'USD', 'EUR'],
         default: 'INR'
     },
+    paymentMethods: [{
+        type: {
+            type: String,
+            enum: ['card', 'upi', 'netbanking', 'wallet'],
+            required: true
+        },
+        details: {
+            type: Object
+        },
+        isDefault: {
+            type: Boolean,
+            default: false
+        }
+    }],
+    notificationPreferences: {
+        email: {
+            type: Boolean,
+            default: true
+        },
+        push: {
+            type: Boolean,
+            default: true
+        },
+        sms: {
+            type: Boolean,
+            default: false
+        }
+    },
     cart: [
         {
           PID: { type: String, required: true },
-          dateadded : {type: Date, required: true , default: Date.now}
+          dateadded : {type: Date, required: true , default: Date.now},
+          quantity: { type: Number, default: 1, min: 1 },
+          selectedSize: String,
+          selectedColor: String
         }
     ],
     saved: [
@@ -61,16 +118,65 @@ const userSchema = new mongoose.Schema({
             dateadded : {type: Date, required: true , default: Date.now}
         }
     ],
+    purchaseHistory: [
+        {
+            orderId: { type: String, required: true },
+            products: [{
+                PID: { type: String, required: true },
+                quantity: { type: Number, required: true },
+                price: { type: Number, required: true },
+                currency: { type: String, required: true }
+            }],
+            totalAmount: { type: Number, required: true },
+            currency: { type: String, required: true },
+            status: {
+                type: String,
+                enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'],
+                default: 'pending'
+            },
+            shippingAddress: {
+                street: String,
+                city: String,
+                state: String,
+                country: String,
+                postalCode: String
+            },
+            paymentMethod: String,
+            orderDate: { type: Date, default: Date.now },
+            deliveryDate: Date
+        }
+    ],
     followers: [
         {
             id: {type:String, required: true},
+            since: {type: Date, default: Date.now}
         }
     ],
     following: [
         {
             id: {type:String, required: true},
+            since: {type: Date, default: Date.now}
         }
-    ]
+    ],
+    designerProfile: {
+        bio: String,
+        specialization: [String],
+        experience: Number, // in years
+        portfolio: [String], // URLs to portfolio items
+        rating: {
+            average: { type: Number, default: 0 },
+            count: { type: Number, default: 0 }
+        }
+    },
+    products: [
+       { PID:{type: String , required: true} }
+    ],
+    lastLogin: Date,
+    accountStatus: {
+        type: String,
+        enum: ['active', 'suspended', 'deactivated'],
+        default: 'active'
+    }
 }, {
     timestamps: true
 });
