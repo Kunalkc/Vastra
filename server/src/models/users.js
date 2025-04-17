@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
-    name: String,
     firstName: String,
     lastName: String,
     email: {
@@ -51,7 +50,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["Designer", "Brand", "Admin", "Business", "Individual"],
+        enum: ["Designer", "Brand", "Admin", "Business", "Individual", "buyer"],
         default: "buyer",
     },
     profilePicture: {
@@ -201,6 +200,11 @@ userSchema.pre('save', async function(next) {
     }
 });
 
+userSchema.virtual('fullName')
+  .get(function () {
+    return this.firstName + ' ' + this.lastName;
+  });
+
 userSchema.methods.comparePassword = async function(candidatePassword) {
     try {
         return await bcrypt.compare(candidatePassword, this.password);
@@ -209,4 +213,4 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
     }
 };
 
-module.exports = mongoose.model("User", userSchema)
+module.exports = mongoose.model("user", userSchema)

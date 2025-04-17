@@ -1,8 +1,12 @@
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
+const userRoutes  = require('./routes/users.routes')
 
-mongoose.connect("mongodb://127.0.0.1:27017/vastra")
+app.use(express.json())
+app.use('/api/users', userRoutes);
+
+mongoose.connect("mongodb://127.0.0.1:27017/vastra").then(()=> console.log("MongoDB connected")).catch(err => console.error(err))
 
 app.get('/', (req,res)=>{
     res.send('backend running');

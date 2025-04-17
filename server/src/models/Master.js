@@ -5,3 +5,5 @@ const master = new mongoose.Schema({
     ongoingitemsauction: Number,
     totalusers: Number,
 })
+
+module.exports = mongooose.model("Master", master)
