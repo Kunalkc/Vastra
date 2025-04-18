@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 
 
 const auctionSchema = new mongoose.Schema({
-    highestbid : number,
+    highestbid : Number,
     highestbidder : {
         type : String,
         unique: true,

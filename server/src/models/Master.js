@@ -6,4 +6,4 @@ const master = new mongoose.Schema({
     totalusers: Number,
 })
 
-module.exports = mongooose.model("Master", master)
+module.exports = mongoose.model("Master", master)
