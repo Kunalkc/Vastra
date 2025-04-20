@@ -1,4 +1,5 @@
 const product = require('../models/Products')
+const user = require('../models/users')
 
 exports.viewallProducts = async (req,res) => {
     try {

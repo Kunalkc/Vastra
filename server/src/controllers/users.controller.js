@@ -46,7 +46,7 @@ exports.getUserById = async (req, res) => {
 //deleteuser
 exports.deleteUser = async (req, res) => {
     try {
-        await user.findByIdAndDelete(req.params.userId);
+        await user.findByIdAndDelete(req.user.userId);
         res.status(200).json({ message: 'User deleted successfully' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -59,19 +59,19 @@ exports.addFollow = async (req, res) => {
         const { userId, otherUserId } = req.body;
 
         // Find both users
-        const user = await User.findById(userId);
-        const otherUser = await User.findById(otherUserId);
+        const firstuser = await user.findById(userId);
+        const otherUser = await user.findById(otherUserId);
 
         if (!user || !otherUser) {
             return res.status(404).json({ message: 'User(s) not found' });
         }
 
         // Add user to the other's follower/following list
-        user.following.push({ id: otherUserId });
+        firstuser.following.push({ id: otherUserId });
         otherUser.followers.push({ id: userId });
 
         // Save both user documents
-        await user.save();
+        await firstuser.save();
         await otherUser.save();
 
         res.status(200).json({ message: 'Follow action successful' });
@@ -100,7 +100,7 @@ exports.addProductToUser = async (req, res) => {
 // Deactivate account 
 exports.deactivateAccount = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user.userId;
 
         // Find the user
         const user = await user.findById(userId);
@@ -125,7 +125,7 @@ exports.deactivateAccount = async (req, res) => {
 // update user profile
 exports.updateUser = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const  userId  = req.user.userId;
         const { firstName, lastName, email, phoneNumber, address, profilePicture , currencypreference } = req.body;
 
         // Find user by userId

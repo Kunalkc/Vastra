@@ -5,8 +5,11 @@ const userRoutes  = require('./routes/users.routes')
 const productRoutes  = require('./routes/products.routes') 
 const auctionRoutes  = require('./routes/auction.routes') 
 const masterRoutes  = require('./routes/master.routes') 
+const loginroutes = require('./routes/login.routes')
 
 app.use(express.json());
+
+app.use('/api/login', loginroutes)
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes)
 app.use('/api/auction', auctionRoutes)
