@@ -85,13 +85,13 @@ exports.addProductToUser = async (req, res) => {
     try {
         const { userId, PID } = req.body;
 
-        const user = await user.findById(userId);
-        if (!user) return res.status(404).json({ message: 'User not found' });
+        const thisuser = await user.findById(userId);
+        if (!thisuser) return res.status(404).json({ message: 'User not found' });
 
-        user.products.push({ PID });
-        await user.save();
+        thisuser.products.push({ PID });
+        await thisuser.save();
 
-        res.status(200).json({ message: 'Product added to user', user });
+        res.status(200).json({ message: 'Product added to user', thisuser });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -103,17 +103,17 @@ exports.deactivateAccount = async (req, res) => {
         const userId = req.user.userId;
 
         // Find the user
-        const user = await user.findById(userId);
+        const thisuser = await user.findById(userId);
 
-        if (!user) {
+        if (!thisuser) {
             return res.status(404).json({ message: 'User not found' });
         }
 
         // Deactivate the account (soft delete)
-        user.accountStatus = 'deactivated';
+        thisuser.accountStatus = 'deactivated';
 
         // Save the user document
-        await user.save();
+        await thisuser.save();
 
         res.status(200).json({ message: 'Account deactivated successfully' });
     } catch (error) {
@@ -129,25 +129,25 @@ exports.updateUser = async (req, res) => {
         const { firstName, lastName, email, phoneNumber, address, profilePicture , currencypreference } = req.body;
 
         // Find user by userId
-        const user = await user.findById(userId);
+        const thisuser = await user.findById(userId);
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
         // Update profile fields
-        user.firstName = firstName || user.firstName;
-        user.lastName = lastName || user.lastName;
-        user.email = email || user.email;
-        user.phoneNumber = phoneNumber || user.phoneNumber;
-        user.address = address || user.address;
-        user.profilePicture = profilePicture || user.profilePicture;
-        user.currencypreference = currencypreference || user.currencypreference
+        thisuser.firstName = firstName || thisuser.firstName;
+        thisuser.lastName = lastName || thisuser.lastName;
+        thisuser.email = email || thisuser.email;
+        thisuser.phoneNumber = phoneNumber || thisuser.phoneNumber;
+        thisuser.address = address || thisuser.address;
+        thisuser.profilePicture = profilePicture || thisuser.profilePicture;
+        thisuser.currencypreference = currencypreference || thisuser.currencypreference
 
         // Save the updated user
-        await user.save();
+        await thisuser.save();
         
-        res.status(200).json({ message: 'Profile updated successfully', user });
+        res.status(200).json({ message: 'Profile updated successfully', thisuser });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

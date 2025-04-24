@@ -21,7 +21,7 @@ exports.loginWithemail = async (req , res) => {
       { expiresIn: '7d'}
     )
 
-    res.json({token , user})
+    res.json({token , curruser})
 }
 
 

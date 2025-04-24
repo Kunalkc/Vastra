@@ -6,6 +6,11 @@ const productRoutes  = require('./routes/products.routes')
 const auctionRoutes  = require('./routes/auction.routes') 
 const masterRoutes  = require('./routes/master.routes') 
 const loginroutes = require('./routes/login.routes')
+require('dotenv').config();
+
+const cors = require('cors')
+app.use(cors({origin: 'http://localhost:5173' , credentials: true}))
+//allowing frontend to communicate with the backend
 
 app.use(express.json());
 

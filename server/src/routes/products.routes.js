@@ -1,12 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const productController = require('../controllers/products.controller')
-const reqauth = require('../middlewares/requireAuth')
+const {requireAuth} = require('../middlewares/requireAuth')
 
 router.get('/' , productController.viewallProducts)
-router.post('/' , reqauth , productController.createProduct)
+router.post('/' , requireAuth , productController.createProduct)
 router.get('/:id', productController.getprodbyid )
-router.put('/:id', reqauth,  productController.updateProduct);
-router.delete('/:id', reqauth ,productController.deleteProduct);
+router.put('/:id', requireAuth,  productController.updateProduct);
+router.delete('/:id', requireAuth ,productController.deleteProduct);
 
 module.exports = router
