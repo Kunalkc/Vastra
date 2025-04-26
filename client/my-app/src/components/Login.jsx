@@ -1,6 +1,14 @@
 import react from 'react'
 import { useState } from 'react'
 import axios from 'axios'
+import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
+
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { app } from "../firebase-config"; // adjust the path according to your project
+
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 export default function Login(){
 
@@ -9,6 +17,8 @@ export default function Login(){
     const [error, setError] = useState('')
 
     console.log(email , password)
+
+    const navigate = useNavigate()
 
     const handlesubmit = async(e)=> {
 
@@ -23,14 +33,63 @@ export default function Login(){
   
         localStorage.setItem('token', res.data.token);
         alert('Login successful!');
+        navigate('/home')
 
-        // Navigate to home page or dashboard here
        }catch (err) {
         setError(err.response?.data?.message || 'Login failed');
         alert(err.response?.data?.message )
        }
     }
 
+
+    const handleGoogleLogin = async () => {
+        try {
+          const result = await signInWithPopup(auth, provider);
+          const user = result.user;
+      
+          // user.email, user.displayName etc are now available
+          console.log('Google user:', user);
+      
+          const token = await user.getIdToken(); // This is the Google JWT
+      
+          console.log('Google Token:', token);
+      
+          const res = await axios.post('http://localhost:5001/api/login/google-login', {
+            token: token,
+          });
+      
+         
+          alert('Google login successful!');
+          navigate('/home')
+
+          // Save token if needed
+          localStorage.setItem('token', token);
+      
+        } catch (error) {
+          console.error('Google login error', error);
+          alert('Google login failed');
+        }
+      };
+
+ /*    const handleGoogleLogin = async (credentialResponse) => {
+        const { credential } = credentialResponse;
+    
+        try {
+          const res = await axios.post('http://localhost:5001/api/login/google', {
+            token: credential
+          });
+    
+          localStorage.setItem('token', res.data.token);
+          alert('Google login successful!');
+          navigate('/home')
+
+          
+        } catch (err) {
+          alert('Google login failed');
+          console.error(err);
+        }
+    };
+ */
     return(
         <div className='box-border h-screen flex flex-col gap-10 justify-center items-center bg-gray-700'>
             <h1 className='text-cyan-100 select-none text-8xl'>VASTRA</h1>
@@ -52,6 +111,17 @@ export default function Login(){
              />
              <button type='submit' onClick = {handlesubmit} className='bg-gray-700 text-cyan-100 rounded-xl w-1/2 self-center'>Login</button>
            </form>
+
+           <div className="mt-2">
+
+           <button onClick={handleGoogleLogin} 
+             className="bg-amber-50 w-auto p-1 text-black text-nowrap rounded-xl self-center  hover:bg-cyan-100">
+           Google login
+          </button>
+
+
+        </div>
+
         </div>
         </div>
     )
