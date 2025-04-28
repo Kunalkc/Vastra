@@ -25,9 +25,29 @@ const productSchema = new mongoose.Schema({
         type: String,
     },
     theme: {
-        bgColor: { type: String, default: "#ffffff" },
-        textColor: { type: String, default: "#000000" },
-        fontFamily: {
+        bgColor: { type: String, default: "#a69c9c" },
+        gradient: String
+    },
+    layout: [
+        {
+
+          content: String, //only for text
+          url: { type: String}, //only for images
+          public_id: { type: String}, //img
+          alt: { type: String }, 
+          type: {
+            type: String,
+            enum: ["image", "text"],
+            default: "gallery",
+            required : true
+          },
+          top: { type: Number, required: true },
+          left: { type: Number, required: true },
+          width: { type: Number },
+          height: { type: Number },
+          fontSize: { type: Number },    // only for text
+          textColor: { type: String, default: "#000000" },       // only for text
+          fontFamily: {
             type: String,
             enum: [
               "Roboto",
@@ -43,19 +63,7 @@ const productSchema = new mongoose.Schema({
             ],
             default: "Poppins",
           
-        },
-        gradient: String
-    },
-    images: [
-        {
-          url: { type: String, required: true },
-          public_id: { type: String, required: true },
-          alt: { type: String },
-          type: {
-            type: String,
-            enum: ["cover", "thumbnail", "gallery", "other"],
-            default: "gallery"
-          }
+        }
         }
      ]
 })

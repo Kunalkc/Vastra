@@ -6,6 +6,7 @@ import Login from './components/Login.jsx'
 import Home from './components/Home.jsx'
 import Profile from './components/Profile.jsx'
 import Auction from './components/Auction.jsx'
+import Post from './components/addproduct.jsx'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
       <Route path="/home" element={<Home />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/auction" element={<Auction />} />
+      <Route path="/post" element={<Post/>} />
       <Route path="*" element={<div>Page Not Found</div>} />
     </Routes>
   </Router>

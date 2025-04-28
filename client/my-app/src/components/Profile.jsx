@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import Bottombar from './makepost'
+import Bottombar from './Bottombar'
+import Header from './Header'
 
 export default function Profile() {
     const [user, setUser] = useState(null)
@@ -151,15 +152,7 @@ export default function Profile() {
     return (
         <div className="min-h-screen w-screen bg-cyan-50 flex flex-col items-center pb-10">
             {/* Header with navigation */}
-            <div className="fixed top-0 h-15 w-screen bg-gray-700 rounded-b-2xl shadow-lg shadow-black flex flex-row justify-between items-center z-10">
-                <h1 onClick={ () => navigate('/home')} className="text-cyan-100 text-5xl pl-2 cursor-pointer">VASTRA</h1>
-                <button 
-                    className="bg-amber-50 rounded-2xl text-2xl h-10 mr-4 p-1 hover:scale-105 hover:shadow-2xs"
-                    onClick={() => navigate('/home')}
-                >
-                    Home
-                </button>
-            </div>
+            <Header/>
             
             {/* Profile content */}
             <div className="mt-24 w-[90%] max-w-5xl">
