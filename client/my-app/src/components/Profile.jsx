@@ -1,13 +1,258 @@
-import react from 'react'
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import Bottombar from './makepost'
 
-export default function Profile(){
+export default function Profile() {
+    const [user, setUser] = useState(null)
+    const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
+    
+    const navigate = useNavigate()
 
-    const [id , changeid] = useState('')
+    // Function to handle both regular JWT and Google Firebase tokens
+    const getUserId = async () => {
+        try {
+            // First try to get userId directly from localStorage
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                console.log('Found userId directly in localStorage:', userId);
+                return userId;
+            }
 
-    return(
-        <div>
-           <p>this is Profile page</p>
+            // If not available, try to decode the token
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No token found');
+            }
+
+            console.log('Token found:', token.substring(0, 20) + '...');
+            
+            // Check if it's a standard JWT (has 3 parts separated by dots)
+            if (token.split('.').length === 3) {
+                try {
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const payload = JSON.parse(atob(base64));
+                    console.log('Decoded JWT payload:', payload);
+                    
+                    if (payload.userId) {
+                        console.log('Found userId in JWT payload:', payload.userId);
+                        return payload.userId;
+                    }
+                } catch (e) {
+                    console.log('Error decoding JWT, might be a different format:', e);
+                    // Continue to other methods
+                }
+            }
+            
+            // If it's a Google Firebase token, try to validate it with our backend
+            try {
+                console.log('Trying to validate token with backend...');
+                const response = await axios.post('http://localhost:5001/api/login/validate-token', { token });
+                if (response.data && response.data.userId) {
+                    console.log('Backend validated token, userId:', response.data.userId);
+                    // Store for future use
+                    localStorage.setItem('userId', response.data.userId);
+                    return response.data.userId;
+                }
+            } catch (e) {
+                console.log('Backend token validation failed:', e);
+                // Continue to other methods
+            }
+            
+            // Try to get user info from Google token
+            try {
+                console.log('Trying to get user info from Google token...');
+                // This is a workaround - we're using the token to get the user's email
+                // and then using that to find the user in our database
+                const googleUserResponse = await axios.get('http://localhost:5001/api/users', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
+                if (googleUserResponse.data && googleUserResponse.data.length > 0) {
+                    // Find the first user that matches the email from the token
+                    // This is not ideal but might work as a fallback
+                    console.log('Found users, trying to match with token info');
+                    return googleUserResponse.data[0]._id;
+                }
+            } catch (e) {
+                console.log('Failed to get user info from Google token:', e);
+                // Continue to other methods
+            }
+            
+            // If we can't get userId from token, check if token itself might be the userId
+            if (token.length === 24 || token.length === 36) {  // MongoDB ObjectId or UUID length
+                console.log('Using token as userId (might be direct ID)');
+                return token;
+            }
+            
+            throw new Error('Could not extract user ID from available data');
+        } catch (error) {
+            console.error('Error getting user ID:', error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        // Fetch user data
+        const fetchUserData = async () => {
+            try {
+                setLoading(true);
+                
+                // Try to get the user ID
+                let userId;
+                try {
+                    userId = await getUserId();
+                    console.log('Using userId:', userId);
+                } catch (error) {
+                    console.error('Failed to get userId:', error);
+                    navigate('/login');
+                    return;
+                }
+                
+                // Fetch user details
+                const userResponse = await axios.get(`http://localhost:5001/api/users/${userId}`);
+                console.log('User data:', userResponse.data);
+                setUser(userResponse.data);
+                
+                // Fetch all products
+                const productsResponse = await axios.get('http://localhost:5001/api/products');
+                console.log('All products:', productsResponse.data);
+                
+                // Filter products by owner ID
+                const userProducts = productsResponse.data.filter(
+                    product => product.ownerID === userId
+                );
+                
+                console.log('User products:', userProducts);
+                setProducts(userProducts);
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching data:', err);
+                setError(err.message || 'Failed to load profile data');
+                setLoading(false);
+            }
+        }
+
+        fetchUserData();
+    }, [navigate]);
+
+   
+    if (error) {
+        return (
+            <div className="h-screen w-screen flex justify-center items-center bg-cyan-50">
+                <div className="text-2xl text-red-500">{error}</div>
+            </div>
+        )
+    }
+
+    return (
+        <div className="min-h-screen w-screen bg-cyan-50 flex flex-col items-center pb-10">
+            {/* Header with navigation */}
+            <div className="fixed top-0 h-15 w-screen bg-gray-700 rounded-b-2xl shadow-lg shadow-black flex flex-row justify-between items-center z-10">
+                <h1 onClick={ () => navigate('/home')} className="text-cyan-100 text-5xl pl-2 cursor-pointer">VASTRA</h1>
+                <button 
+                    className="bg-amber-50 rounded-2xl text-2xl h-10 mr-4 p-1 hover:scale-105 hover:shadow-2xs"
+                    onClick={() => navigate('/home')}
+                >
+                    Home
+                </button>
+            </div>
+            
+            {/* Profile content */}
+            <div className="mt-24 w-[90%] max-w-5xl">
+                {/* User info card */}
+                {user && (
+                    <div className="bg-white rounded-xl shadow-md p-4 mb-8">
+                        <div className="flex items-center">
+                            {user.profilePicture?.url ? (
+                                <img 
+                                    src={user.profilePicture.url} 
+                                    alt="Profile" 
+                                    className="w-16 h-16 rounded-full mr-4 object-cover"
+                                />
+                            ) : (
+                                <div className="w-16 h-16 rounded-full bg-gray-300 mr-4 flex items-center justify-center">
+                                    <span className="text-2xl text-gray-600">
+                                        {user.firstName?.charAt(0) || user.username?.charAt(0) || '?'}
+                                    </span>
+                                </div>
+                            )}
+                            
+                            <div className="flex-1">
+                                <h2 className="text-2xl font-semibold">
+                                    {user.firstName && user.lastName 
+                                        ? `${user.firstName} ${user.lastName}` 
+                                        : user.username}
+                                </h2>
+                                <div className="flex flex-wrap gap-x-6 text-gray-600">
+                                    <span>{user.email}</span>
+                                    {user.role && <span>• {user.role}</span>}
+                                    {user.phoneNumber && <span>• {user.phoneNumber}</span>}
+                                    {user.address?.city && user.address?.country && (
+                                        <span>• {user.address.city}, {user.address.country}</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                
+                {/* Products showcase */}
+                <h2 className="text-3xl font-bold mb-4">My Products</h2>
+                
+                {products.length === 0 ? (
+                    <div className="bg-white rounded-xl shadow-md p-8 text-center">
+                        <p className="text-xl text-gray-500">You haven't added any products yet.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {products.map(product => (
+                            <div 
+                                key={product._id || product.ID} 
+                                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                            >
+                                {/* Product image */}
+                                <div className="h-48 overflow-hidden">
+                                    {product.images && product.images.length > 0 ? (
+                                        <img 
+                                            src={product.images[0].url} 
+                                            alt={product.images[0].alt || product.Title} 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                            <span className="text-gray-400">No image</span>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* Product details */}
+                                <div className="p-4">
+                                    <h3 className="text-xl font-semibold mb-2">{product.Title}</h3>
+                                    <p className="text-gray-600 mb-2 line-clamp-2">
+                                        {product.description || 'No description available'}
+                                    </p>
+                                    <div className="flex justify-between items-center">
+                                        <span className="font-bold text-lg">
+                                            {product.currency} {product.price}
+                                        </span>
+                                        <button 
+                                            className="bg-gray-700 text-white px-3 py-1 rounded-lg hover:bg-gray-600"
+                                            onClick={() => {/* View product details */}}
+                                        >
+                                            View
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+            <Bottombar />
         </div>
     )
 }

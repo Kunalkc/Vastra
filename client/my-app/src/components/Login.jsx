@@ -50,20 +50,30 @@ export default function Login(){
           // user.email, user.displayName etc are now available
           console.log('Google user:', user);
       
-          const token = await user.getIdToken(); // This is the Google JWT
+          const googleToken = await user.getIdToken(); // This is the Google JWT
       
-          console.log('Google Token:', token);
+          console.log('Google Token:', googleToken);
       
           const res = await axios.post('http://localhost:5001/api/login/google-login', {
-            token: token,
+            token: googleToken,
           });
       
-         
+          // Store the JWT token from our backend, not the Google token
+          if (res.data && res.data.token) {
+            localStorage.setItem('token', res.data.token);
+            
+            // Also store the user ID for easier access
+            if (res.data.user && res.data.user._id) {
+              localStorage.setItem('userId', res.data.user._id);
+            }
+          } else {
+            // Fallback: store the Google token if our backend doesn't return a token
+            console.log('Backend did not return a token, using Google token as fallback');
+            localStorage.setItem('token', googleToken);
+          }
+          
           alert('Google login successful!');
-          navigate('/home')
-
-          // Save token if needed
-          localStorage.setItem('token', token);
+          navigate('/home');
       
         } catch (error) {
           console.error('Google login error', error);

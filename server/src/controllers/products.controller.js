@@ -82,3 +82,21 @@ exports.updateProduct = async (req, res) => {
        res.status(500).json({ message: "Server error", error: err.message });
     }
 };
+
+exports.getprodbyuser = async (req,res) => {
+     try{
+          const userID = req.params.id
+          const userproducts = await product.find({_id : userID})
+
+          if(userproducts.length ===  0){
+            return res.status(404).json({message: "user has not added any products yet"})
+          }
+
+          res.json({message:"products fetched successfully" , userproducts })
+
+     }catch(err){ 
+      console.error(err)
+      res.status(500).json({message: "couldn't fetch products" , error: err.message})
+     }
+
+}
