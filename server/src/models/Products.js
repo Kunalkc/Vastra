@@ -38,7 +38,6 @@ const productSchema = new mongoose.Schema({
           type: {
             type: String,
             enum: ["image", "text"],
-            default: "gallery",
             required : true
           },
           top: { type: Number, required: true },
@@ -47,7 +46,7 @@ const productSchema = new mongoose.Schema({
           height: { type: Number },
           fontSize: { type: Number },    // only for text
           textColor: { type: String, default: "#000000" },       // only for text
-          fontFamily: {
+          fontFamily: {     // only for text
             type: String,
             enum: [
               "Roboto",
