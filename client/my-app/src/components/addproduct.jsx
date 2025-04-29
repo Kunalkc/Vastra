@@ -100,6 +100,10 @@ export default function createProduct(){
     }
    
 
+    const posttheproduct = () => {
+
+        // here we need to send the images from the layout variable and send them to backend to upload and then replace the img file with the imgurls from cloudinary and then add the product to DB
+    }
    
    
     const insertimage = () => {
@@ -129,9 +133,11 @@ export default function createProduct(){
             fontSize: 10,
             textColor: "#000000"
         }
-
+        settext('')
         savelayout((prevLayout) => [...prevLayout, newtext])
     }
+
+    const nodeRef = react.useRef(null)
 
     return(
         <div className="w-screen h-screen bg-[#a69c9c]">
@@ -150,6 +156,7 @@ export default function createProduct(){
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row gap-3 w-[70%]">
             <input
              type="text"
+             value={usertext}
              onChange={(e)=>settext(e.target.value)}  // sets what user types in out usertext statefield
              className="border p-2 rounded-lg bg-cyan-50 w-[100%]"
              />
@@ -174,10 +181,11 @@ export default function createProduct(){
         {layout.map((item) => (
           <Draggable
             key={item.id}
+            nodeRef={nodeRef}
             defaultPosition={{ x: item.left, y: item.top }}
             onStop={(e, data) => handlePositionChange(e, data, item.id)}
           >
-            <div className="absolute top-0 left-0">
+            <div ref={nodeRef} className="absolute top-0 left-0">
               <ResizableBox
                 width={item.width}
                 height={item.height}
