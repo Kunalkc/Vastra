@@ -11,9 +11,14 @@ export default function createProduct(){
     const [file , setfile] = react.useState(null)  // to upload a particular image to backend
     const [layout , savelayout] = react.useState([])  // in order to save the layout once the user is done arranging
     const [imageURL , setimgurl] = react.useState('') // when the backend sends back url of image after cloudinary upload we shall save it here for time being before sending product data back
-    const  [usertext, settext ] = react.useState('')  // we shall save the text entered by user here for time being before sending product data back
+    const [usertext, settext ] = react.useState('')  // we shall save the text entered by user here for time being before sending product data back
 
     const [fileselector, flip] = react.useState(false)
+    const [textreciever , fliptext] = react.useState(false)
+
+
+
+
 
     const uploadImage = async () => {
 
@@ -29,7 +34,7 @@ export default function createProduct(){
         
     }
     console.log(file)
-
+    console.log(usertext)
     // getting the updated position from the draggable and adding it to the layout data structure
     const handlePositionChange = (e, data, id) => {
         savelayout((prev) =>
@@ -77,39 +82,92 @@ export default function createProduct(){
         savelayout((prevLayout) => [...prevLayout, newtext])
     }
     
+
     const saveProduct = () =>{
 
     }
+
+    // these two functions toggle whether file selector and text reciever are open or not 
     const openFileselecter = () =>{
       console.log('flip called')
       flip((prev) => !prev)
+      fliptext(false)
     }
-    const openTextbox = () =>{
+    const toggletext = () =>{
+      console.log('text flip called')
+      fliptext((prev) => !prev)
+      flip(false)
+    }
+   
 
+   
+   
+    const insertimage = () => {
+        const newItem = {
+            id: Date.now(),  // Unique ID
+            type: 'image',   // We will support text as well later
+            img: file,
+            alt: 'product image',
+            top:   100,      // Default position
+            left: 100,
+            width: 200,      // Default width
+            height: 200,     // Default height
+          };
+          savelayout((prevLayout) => [...prevLayout, newItem]);
     }
 
-    //this would close the fileselector when a file is chosen
-    const filechooser = (e) =>{
-        openFileselecter()
-         setfile(e.target.files[0])
+
+    const inserttext = () => {
+        const newtext = {
+            id: Date.now(),
+            type: 'text',
+            content: usertext,
+            top:   100,      // Default position
+            left: 100,
+            width: 200,      // Default width
+            height: 200,     // Default height
+            fontSize: 10,
+            textColor: "#000000"
+        }
+
+        savelayout((prevLayout) => [...prevLayout, newtext])
     }
+
     return(
         <div className="w-screen h-screen bg-[#a69c9c]">
 
-            <div className="fixed bottom-10 left-1/2 drop-shadow-lg transform -translate-x-1/2 -translate-y-1/2 flex flex-row gap-5 bg-cyan-100 w-auto self-end rounded-xl px-1">
+            <div className="fixed bottom-10 left-1/2 drop-shadow-lg transform -translate-x-1/2 -translate-y-1/2 flex flex-row gap-5 bg-cyan-50 w-auto self-end rounded-xl px-1">
 
 
                <button onClick={openFileselecter} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg">Add image</button>
-               <button onClick={openTextbox} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg" > Add text</button>
+               <button onClick={toggletext} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg" > Add text</button>
                <button onClick={saveProduct} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg"> Post</button>
                
             </div>
 
-           {fileselector ? <></> : <input
+           {
+            textreciever ? 
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row gap-3 w-[70%]">
+            <input
+             type="text"
+             onChange={(e)=>settext(e.target.value)}  // sets what user types in out usertext statefield
+             className="border p-2 rounded-lg bg-cyan-50 w-[100%]"
+             />
+            <button onClick={inserttext} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg">insert</button>
+            </div>
+             : <></>
+           }
+            
+           {fileselector ? 
+           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row gap-3">
+           <input
             type="file"
-            onChange={filechooser}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border p-2 rounded-lg bg-cyan-100"
-          />}          
+            onChange={(e) =>{setfile(e.target.files[0]) } }  // saves the file user selects in the file state field
+            className=" border p-2 rounded-lg bg-cyan-50"
+          /> 
+          <button onClick={insertimage} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg">insert</button>
+          </div>
+          : <></>}          
   
           
         {/* looping over layout state to check new items and add them appropriately on the screen */}    
@@ -139,7 +197,7 @@ export default function createProduct(){
                     className="w-full h-full object-cover rounded shadow"
                   />
                 ) : (
-                  <div className="w-full h-full bg-white text-black p-2 border border-gray-400 rounded shadow overflow-auto">
+                  <div className="w-full h-full bg-white text-black p-2 border-8 border-gray-800 rounded shadow overflow-auto">
                     {item.text}
                   </div>
                 )}
