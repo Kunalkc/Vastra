@@ -15,8 +15,16 @@ export default function CreateProduct(){
 
     const [fileselector, flip] = React.useState(false)
     const [textreciever , fliptext] = React.useState(false)
+ 
+    const [bgColor, setBgColor] = React.useState('#a69c9c');  // state to store the bg color in set to #a69c9c by default
 
+    //in order to store the user selected values for these
+    const [font, setFont] = React.useState("Arial");
+    const [textColor, setTextColor] = React.useState("#000000");
+    const [zIndex, setZIndex] = React.useState(1);
+    const [fontSize, setSize] = React.useState(10)
 
+    const [imgzindex , setzimg] = React.useState(0)
 
     const uploadImage = async () => {
 
@@ -60,6 +68,7 @@ export default function CreateProduct(){
           left: 100,
           width: 200,      // Default width
           height: 200,     // Default height
+          zindex: 0,
         };
         savelayout((prevLayout) => [...prevLayout, newItem]);
     };
@@ -74,7 +83,8 @@ export default function CreateProduct(){
             width: 200,      // Default width
             height: 200,     // Default height
             fontSize: 10,
-            textColor: "#000000"
+            textColor: textColor,
+            zindex: 1
         }
 
         savelayout((prevLayout) => [...prevLayout, newtext])
@@ -114,6 +124,7 @@ export default function CreateProduct(){
             left: 100,
             width: 200,      // Default width
             height: 200,     // Default height
+            zIndex:  imgzindex ,
           };
           flip(false) // close selector
           savelayout((prevLayout) => [...prevLayout, newItem]);
@@ -129,8 +140,10 @@ export default function CreateProduct(){
             left: 100,
             width: 200,      // Default width
             height: 200,     // Default height
-            fontSize: 10,
-            textColor: "#000000"
+            fontSize: fontSize,
+            zIndex: zIndex  , 
+            fontfamily: font,
+            textColor: textColor
         }
         settext('')
         fliptext(false) // close the selector
@@ -140,40 +153,122 @@ export default function CreateProduct(){
     
 
     return(
-        <div className="w-screen h-screen overflow-auto bg-[#a69c9c]">
+        <div className="w-screen h-screen overflow-auto" style={{ backgroundColor: bgColor }}>
 
     <div className="relative min-h-[200vh] w-full">
             <div className="fixed bottom-10 left-1/2 drop-shadow-lg transform -translate-x-1/2 -translate-y-1/2 flex flex-row gap-5 bg-cyan-50 w-auto self-end rounded-xl px-1">
 
-
+            <input
+              type="color"
+              value={bgColor}
+              onChange={(e) => setBgColor(e.target.value)}
+              className="w-10 h-10  cursor-pointer"
+            />
                <button onClick={openFileselecter} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg">Add image</button>
                <button onClick={toggletext} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg" > Add text</button>
                <button onClick={saveProduct} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg"> Post</button>
                
             </div>
 
+   {/* container to take in user text  */}
            {
             textreciever ? 
-            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row gap-3 w-[70%]">
+            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2  w-[70%] flex flex-col gap-2 z-10000">
+            <div className="flex flex-row gap-3">
             <input
              type="text"
              value={usertext}
              onChange={(e)=>settext(e.target.value)}  // sets what user types in out usertext statefield
-             className="border p-2 rounded-lg bg-cyan-50 w-[100%]"
+             className="border p-2 rounded-lg bg-cyan-50 w-[100%] z-100"
              />
             <button onClick={inserttext} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg">insert</button>
             </div>
+            
+            <div className="flex flex-row gap-8">
+            <label className="flex flex-row items-center gap-2">
+            <span className="mb-1 text-sm font-medium">Font</span>
+              <select
+                onChange={(e) => setFont(e.target.value)}
+                className="p-2 rounded bg-white"
+              >
+                <option value="Arial">Arial</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+              </select>
+            </label>
+
+            <label className="flex flex-row items-center gap-2">
+            <span className="text-sm font-medium">Text Color</span>
+              <input
+                type="color"
+                value={textColor}
+                onChange={(e) => setTextColor(e.target.value)}
+              />
+            </label>
+
+            <label className="flex flex-row items-center gap-2">
+            <span className="mb-1 text-sm font-medium">Z-Index</span>
+              <input
+                type="number"
+                min={0}
+                max={999}
+                placeholder="z-index"
+                value={zIndex}
+                onChange={(e) => setZIndex(Number(e.target.value))}
+                className="w-16 p-2 rounded"
+              />
+            </label>
+
+            <label className="flex flex-row items-center gap-2">
+            <span className="mb-1 text-sm font-medium">Font Size</span>
+              <input
+                type="number"
+                min={0}
+                max={999}
+                placeholder="fontsize"
+                value={fontSize}
+                onChange={(e) => setSize(Number(e.target.value))}
+                className="w-16 p-2 rounded"
+              />
+            </label>
+            </div>
+            
+            
+            </div>
              : <></>
            }
-            
+
+ {/*  interface to select the image */}     
+
            {fileselector ? 
-           <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row gap-3">
+
+           <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10000">
+
+           <div className="flex flex-row gap-3">
            <input
             type="file"
             onChange={(e) =>{setfile(e.target.files[0]) } }  // saves the file user selects in the file state field
-            className=" border p-2 rounded-lg bg-cyan-50"
+            className=" border p-2 rounded-lg bg-cyan-50 z-100"
           /> 
           <button onClick={insertimage} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg">insert</button>
+          </div>
+
+          <div>
+          <label className="flex flex-row items-center gap-2">
+            <span className="mb-1 text-sm font-medium">Z-Index</span>
+              <input
+                type="number"
+                min={0}
+                max={999}
+                placeholder="z-index"
+                value={imgzindex}
+                onChange={(e) => setzimg(Number(e.target.value))}
+                className="w-16 p-2 rounded"
+              />
+            </label>
+          </div>
           </div>
           : <></>}          
   
@@ -197,7 +292,7 @@ export default function CreateProduct(){
                   width={item.width}
                   height={item.height}
                   minConstraints={[50, 50]}
-                  maxConstraints={[600, 600]}
+                  maxConstraints={[1200, 1200]}
                   draggableOpts={{grid: [25, 25]}}
                   resizeHandles={['se']} // southeast handle (bottom-right)
                   handle={
@@ -216,10 +311,20 @@ export default function CreateProduct(){
                     <img
                       src={item.img}
                       alt="layout"
-                      className="w-full h-full object-cover rounded shadow pointer-events-none"
+                      className="w-full h-full object-cover rounded shadow pointer-events-none z-9"
+                      style={{
+                        zIndex: item.zIndex,
+                      }}
                     />
                   ) : (
-                    <div className="w-auto h-auto text-black p-2 bg-transparent whitespace-pre-wrap wrap-break-word shadow overflow-visible">
+                    <div className="w-auto h-auto text-black p-2 bg-transparent whitespace-pre-wrap wrap-break-word shadow overflow-visible"
+                         style={{
+                           color: item.textColor,
+                           fontFamily: item.fontfamily,
+                           fontSize: `${item.fontSize}px`,
+                           zIndex: item.zIndex,
+                         }}
+                    >
                       {item.content}
                     </div>
                   )}
@@ -236,3 +341,4 @@ export default function CreateProduct(){
         </div>
     )
 }
+
