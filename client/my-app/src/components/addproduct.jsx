@@ -1,4 +1,4 @@
-import react from "react"
+import React from "react"
 import axios from "axios"
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
@@ -8,13 +8,13 @@ import Bottombar from "./Bottombar";
 
 export default function createProduct(){
 
-    const [file , setfile] = react.useState(null)  // to upload a particular image to backend
-    const [layout , savelayout] = react.useState([])  // in order to save the layout once the user is done arranging
-    const [imageURL , setimgurl] = react.useState('') // when the backend sends back url of image after cloudinary upload we shall save it here for time being before sending product data back
-    const [usertext, settext ] = react.useState('')  // we shall save the text entered by user here for time being before sending product data back
+    const [file , setfile] = React.useState(null)  // to upload a particular image to backend
+    const [layout , savelayout] = React.useState([])  // in order to save the layout once the user is done arranging
+    const [imageURL , setimgurl] = React.useState('') // when the backend sends back url of image after cloudinary upload we shall save it here for time being before sending product data back
+    const [usertext, settext ] = React.useState('')  // we shall save the text entered by user here for time being before sending product data back
 
-    const [fileselector, flip] = react.useState(false)
-    const [textreciever , fliptext] = react.useState(false)
+    const [fileselector, flip] = React.useState(false)
+    const [textreciever , fliptext] = React.useState(false)
 
 
 
@@ -110,13 +110,14 @@ export default function createProduct(){
         const newItem = {
             id: Date.now(),  // Unique ID
             type: 'image',   // We will support text as well later
-            img: file,
+            img:  URL.createObjectURL(file),
             alt: 'product image',
             top:   100,      // Default position
             left: 100,
             width: 200,      // Default width
             height: 200,     // Default height
           };
+          flip(false) // close selector
           savelayout((prevLayout) => [...prevLayout, newItem]);
     }
 
@@ -134,14 +135,16 @@ export default function createProduct(){
             textColor: "#000000"
         }
         settext('')
+        fliptext(false) // close the selector
         savelayout((prevLayout) => [...prevLayout, newtext])
     }
 
-    const nodeRef = react.useRef(null)
+    
 
     return(
-        <div className="w-screen h-screen bg-[#a69c9c]">
+        <div className="w-screen h-screen overflow-auto bg-[#a69c9c]">
 
+    <div className="relative min-h-[200vh] w-full">
             <div className="fixed bottom-10 left-1/2 drop-shadow-lg transform -translate-x-1/2 -translate-y-1/2 flex flex-row gap-5 bg-cyan-50 w-auto self-end rounded-xl px-1">
 
 
@@ -153,7 +156,7 @@ export default function createProduct(){
 
            {
             textreciever ? 
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row gap-3 w-[70%]">
+            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row gap-3 w-[70%]">
             <input
              type="text"
              value={usertext}
@@ -166,7 +169,7 @@ export default function createProduct(){
            }
             
            {fileselector ? 
-           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row gap-3">
+           <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-row gap-3">
            <input
             type="file"
             onChange={(e) =>{setfile(e.target.files[0]) } }  // saves the file user selects in the file state field
@@ -178,42 +181,49 @@ export default function createProduct(){
   
           
         {/* looping over layout state to check new items and add them appropriately on the screen */}    
-        {layout.map((item) => (
-          <Draggable
-            key={item.id}
-            nodeRef={nodeRef}
-            defaultPosition={{ x: item.left, y: item.top }}
-            onStop={(e, data) => handlePositionChange(e, data, item.id)}
-          >
-            <div ref={nodeRef} className="absolute top-0 left-0">
-              <ResizableBox
-                width={item.width}
-                height={item.height}
-                minConstraints={[50, 50]}
-                maxConstraints={[600, 600]}
-                onResizeStop={(e, data) =>
-                  handleResize(item.id, {
-                    width: data.size.width,
-                    height: data.size.height,
-                  })
-                }
-              >
-                {item.type === 'image' ? (
-                  <img
-                    src={item.url}
-                    alt="layout"
-                    className="w-full h-full object-cover rounded shadow"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-white text-black p-2 border-8 border-gray-800 rounded shadow overflow-auto">
-                    {item.text}
-                  </div>
-                )}
-              </ResizableBox>
-            </div>
-          </Draggable>
-        ))}
-  
+        {layout.map((item) => {
+        
+        const nodeRef = React.createRef();
+
+          
+          return(
+            <Draggable
+              key={item.id}
+              nodeRef={nodeRef}
+              defaultPosition={{ x: item.left, y: item.top }}
+              onStop={(e, data) => handlePositionChange(e, data, item.id)}
+            >
+              <div ref={nodeRef} className="absolute overflow-visible top-0 left-0">
+                <ResizableBox
+                  width={item.width}
+                  height={item.height}
+                  minConstraints={[50, 50]}
+                  maxConstraints={[600, 600]}
+                  onResizeStop={(e, data) =>
+                    handleResize(item.id, {
+                      width: data.size.width,
+                      height: data.size.height,
+                    })
+                  }
+                >
+                  {item.type === 'image' ? (
+                    <img
+                      src={item.img}
+                      alt="layout"
+                      className="w-full h-full object-cover rounded shadow"
+                    />
+                  ) : (
+                    <div className="w-auto h-auto text-black p-2 bg-transparent whitespace-pre-wrap wrap-break-word shadow overflow-visible">
+                      {item.content}
+                    </div>
+                  )}
+                </ResizableBox>
+              </div>
+            </Draggable>
+          )
+    
+        })}
+  </div>
             
 
             <Bottombar/>
