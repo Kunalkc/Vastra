@@ -1,7 +1,6 @@
 import react from 'react'
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import './css/Landing.css'
 import Login from './components/Login.jsx'
 import Home from './components/Home.jsx'
 import Profile from './components/Profile.jsx'

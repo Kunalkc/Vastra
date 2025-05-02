@@ -6,7 +6,7 @@ import Bottombar from "./Bottombar";
 
 
 
-export default function createProduct(){
+export default function CreateProduct(){
 
     const [file , setfile] = React.useState(null)  // to upload a particular image to backend
     const [layout , savelayout] = React.useState([])  // in order to save the layout once the user is done arranging
@@ -15,8 +15,6 @@ export default function createProduct(){
 
     const [fileselector, flip] = React.useState(false)
     const [textreciever , fliptext] = React.useState(false)
-
-
 
 
 
@@ -191,6 +189,7 @@ export default function createProduct(){
               key={item.id}
               nodeRef={nodeRef}
               defaultPosition={{ x: item.left, y: item.top }}
+              cancel=".resize-handle"
               onStop={(e, data) => handlePositionChange(e, data, item.id)}
             >
               <div ref={nodeRef} className="absolute overflow-visible top-0 left-0">
@@ -199,6 +198,13 @@ export default function createProduct(){
                   height={item.height}
                   minConstraints={[50, 50]}
                   maxConstraints={[600, 600]}
+                  draggableOpts={{grid: [25, 25]}}
+                  resizeHandles={['se']} // southeast handle (bottom-right)
+                  handle={
+                    <span
+                      className="absolute resize-handle bottom-0 right-0 w-2 h-2 bg-gray-700 cursor-se-resize z-50"
+                    />
+                  }
                   onResizeStop={(e, data) =>
                     handleResize(item.id, {
                       width: data.size.width,
@@ -210,7 +216,7 @@ export default function createProduct(){
                     <img
                       src={item.img}
                       alt="layout"
-                      className="w-full h-full object-cover rounded shadow"
+                      className="w-full h-full object-cover rounded shadow pointer-events-none"
                     />
                   ) : (
                     <div className="w-auto h-auto text-black p-2 bg-transparent whitespace-pre-wrap wrap-break-word shadow overflow-visible">
