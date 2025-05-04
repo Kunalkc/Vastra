@@ -85,9 +85,12 @@ export default function CreateProduct(){
         
           console.log(updatedLayout)
 
-        await axios.post('/api/save-product', {
-          backgroundColor: bgColor,
-          layout: updatedLayout
+        await axios.post('http://localhost:5001/api/products', {
+          theme: bgColor,
+          layout: updatedLayout,
+          ownerID: "kunalchandel09@gmail.com",
+          description: 'A new product' ,
+          Title: 'New product'
         });
     
         alert("Product saved successfully!");
@@ -149,12 +152,6 @@ export default function CreateProduct(){
       savelayout((prevLayout) => prevLayout.filter((item) => item.id !== ID))
     }
     
-    const savetobackend = () => {
-
-      const layout2 = layout.map((item)=>{
-
-      })
-    }
 
     return(
         <div className="w-screen h-screen overflow-auto" style={{ backgroundColor: bgColor }}>

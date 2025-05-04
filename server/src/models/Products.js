@@ -3,12 +3,6 @@ const bcrypt = require("bcrypt")  // dont need this in product schema
 
 const productSchema = new mongoose.Schema({
     Title: String,
-    
-    ID: {
-        type: String,
-        unique: true,
-    },
-
     ownerID:{
         type: String,
         required: true,
@@ -25,8 +19,7 @@ const productSchema = new mongoose.Schema({
         type: String,
     },
     theme: {
-        bgColor: { type: String, default: "#a69c9c" },
-        gradient: String
+        type: String, default: "#a69c9c",
     },
     layout: [
         {

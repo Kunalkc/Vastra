@@ -16,6 +16,7 @@ exports.createProduct = async (req,res) => {
         const newProd = new product(req.body)
         await newProd.save()
         res.status(201).json({ message: 'product created successfully', product: newProd })
+        console.log('product created')
     }catch(err){
         res.status(400).json({ error : err.message})
     }
