@@ -11,6 +11,7 @@ exports.viewallProducts = async (req,res) => {
 }
 
 exports.createProduct = async (req,res) => {
+
     try{
         const newProd = new product(req.body)
         await newProd.save()
@@ -18,6 +19,8 @@ exports.createProduct = async (req,res) => {
     }catch(err){
         res.status(400).json({ error : err.message})
     }
+
+    // we need to add the logic to upload to cloudinary
 }
 
 exports.getprodbyid = async (req,res) => {

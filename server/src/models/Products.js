@@ -44,6 +44,7 @@ const productSchema = new mongoose.Schema({
           left: { type: Number, required: true },
           width: { type: Number },
           height: { type: Number },
+          zIndex: {type: Number},
           fontSize: { type: Number },    // only for text
           textColor: { type: String, default: "#000000" },       // only for text
           fontFamily: {     // only for text

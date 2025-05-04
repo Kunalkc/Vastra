@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
@@ -6,7 +7,9 @@ const productRoutes  = require('./routes/products.routes')
 const auctionRoutes  = require('./routes/auction.routes') 
 const masterRoutes  = require('./routes/master.routes') 
 const loginroutes = require('./routes/login.routes')
-require('dotenv').config();
+const imageupload = require('./routes/imgupload.routes')
+
+
 
 const cors = require('cors')
 app.use(cors({origin: 'http://localhost:5173' , credentials: true}))
@@ -19,6 +22,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes)
 app.use('/api/auction', auctionRoutes)
 app.use('/api/master', masterRoutes)
+app.use('/api/imageupload', imageupload)
 
 mongoose.connect("mongodb://127.0.0.1:27017/vastra").then(()=> console.log("MongoDB connected")).catch(err => console.error(err))
 

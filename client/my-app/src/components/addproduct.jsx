@@ -18,7 +18,7 @@ export default function CreateProduct(){
  
     const [bgColor, setBgColor] = React.useState('#a69c9c');  // state to store the bg color in set to #a69c9c by default
 
-    //in order to store the user selected values for these
+    //in order to store the values user selected values for these
     const [font, setFont] = React.useState("Arial");
     const [textColor, setTextColor] = React.useState("#000000");
     const [zIndex, setZIndex] = React.useState(1);
@@ -35,10 +35,6 @@ export default function CreateProduct(){
         setimgurl(res.data.url); // Set Cloudinary URL to imageURL
     };
 
-    const addtext = async () => {
-
-        
-    }
     console.log(file)
     console.log(usertext)
     // getting the updated position from the draggable and adding it to the layout data structure
@@ -57,42 +53,47 @@ export default function CreateProduct(){
         );
       };
 
-    // WHEN THE ITEM WILL BE PUSHED TO LAYOUT
-    const addimgtolayout = () => {
-        const newItem = {
-          id: Date.now(),  // Unique ID
-          type: 'image',   // We will support text as well later
-          url: imageURL,
-          alt: 'product image',
-          top:   100,      // Default position
-          left: 100,
-          width: 200,      // Default width
-          height: 200,     // Default height
-          zindex: 0,
-        };
-        savelayout((prevLayout) => [...prevLayout, newItem]);
-    };
+    const saveProduct = async () => {
+        // here we need to send the images from the layout variable and send them to backend to upload and then replace the img file with the imgurls from cloudinary and then add the product to DB
+        console.log('post the product called ')
 
-    const addtexttolayout = () =>{
-        const newtext = {
-            id: Date.now(),
-            type: 'text',
-            content: usertext,
-            top:   100,      // Default position
-            left: 100,
-            width: 200,      // Default width
-            height: 200,     // Default height
-            fontSize: 10,
-            textColor: textColor,
-            zindex: 1
-        }
+        //we are first going to obtain updatedlayout array and then save it as it is in backend with the other product details
 
-        savelayout((prevLayout) => [...prevLayout, newtext])
-    }
+        try {
+          const updatedLayout = await Promise.all(
+            layout.map(async (item) => {
+              if (item.type === 'image') {
+                const fileBlob = await fetch(item.img).then(r => r.blob());
+                const file = new File([fileBlob], `image_${item.id}.png`, { type: fileBlob.type });
+      
+                const formData = new FormData();
+                formData.append('image', file);
+      
+                console.log('sending request to upload')
+                console.log(formData)
+
+                const res = await axios.post('http://localhost:5001/api/imageupload', formData);
+
+                console.log('request to upload sent')
+                console.log(res.data.url)
+                return { ...item, img: res.data.url };
+              } else {
+                return item;
+              }
+            })
+          );
+        
+          console.log(updatedLayout)
+
+        await axios.post('/api/save-product', {
+          backgroundColor: bgColor,
+          layout: updatedLayout
+        });
     
-
-    const saveProduct = () =>{
-
+        alert("Product saved successfully!");
+      } catch (err) {
+        console.error("Failed to post product", err);
+      }
     }
 
     // these two functions toggle whether file selector and text reciever are open or not 
@@ -106,17 +107,10 @@ export default function CreateProduct(){
       fliptext((prev) => !prev)
       flip(false)
     }
-   
-
-    const posttheproduct = () => {
-
-        // here we need to send the images from the layout variable and send them to backend to upload and then replace the img file with the imgurls from cloudinary and then add the product to DB
-    }
-   
-   
+      
     const insertimage = () => {
         const newItem = {
-            id: Date.now(),  // Unique ID
+            id: Date.now()-Math.floor(Math.random() * 100000),  // Unique ID
             type: 'image',   // We will support text as well later
             img:  URL.createObjectURL(file),
             alt: 'product image',
@@ -133,7 +127,7 @@ export default function CreateProduct(){
 
     const inserttext = () => {
         const newtext = {
-            id: Date.now(),
+            id : Date.now()-Math.floor(Math.random() * 100000),  // adding unique id so that we can delete the element later
             type: 'text',
             content: usertext,
             top:   100,      // Default position
@@ -150,7 +144,17 @@ export default function CreateProduct(){
         savelayout((prevLayout) => [...prevLayout, newtext])
     }
 
+
+    const deleteelement = (ID) => {
+      savelayout((prevLayout) => prevLayout.filter((item) => item.id !== ID))
+    }
     
+    const savetobackend = () => {
+
+      const layout2 = layout.map((item)=>{
+
+      })
+    }
 
     return(
         <div className="w-screen h-screen overflow-auto" style={{ backgroundColor: bgColor }}>
@@ -287,7 +291,7 @@ export default function CreateProduct(){
               cancel=".resize-handle"
               onStop={(e, data) => handlePositionChange(e, data, item.id)}
             >
-              <div ref={nodeRef} className="absolute overflow-visible top-0 left-0">
+              <div ref={nodeRef} className="absolute group overflow-visible top-0 left-0">
                 <ResizableBox
                   width={item.width}
                   height={item.height}
@@ -329,7 +333,9 @@ export default function CreateProduct(){
                     </div>
                   )}
                 </ResizableBox>
+                <img src={"src/img/delete.svg"} width={35} height={35} className='absolute bottom-0 left-0 hidden group-hover:block scale-75 hover:scale-105' onClick={()=>deleteelement(item.id)}/>
               </div>
+             
             </Draggable>
           )
     

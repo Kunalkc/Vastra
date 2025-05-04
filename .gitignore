@@ -1,3 +1,5 @@
 /server/node_modules
 /server/.env
 server/src/vastra-4f656-6c35e2dc40cf.json
+server/src/multeruploads
+*.env
