@@ -12,6 +12,7 @@ export default function Profile() {
     
     const navigate = useNavigate()
 
+
     // Function to handle both regular JWT and Google Firebase tokens
     const getUserId = async () => {
         try {
@@ -21,6 +22,8 @@ export default function Profile() {
                 console.log('Found userId directly in localStorage:', userId);
                 return userId;
             }
+
+            console.log(userId)
 
             // If not available, try to decode the token
             const token = localStorage.getItem('token');
@@ -118,17 +121,14 @@ export default function Profile() {
                 console.log('User data:', userResponse.data);
                 setUser(userResponse.data);
                 
-                // Fetch all products
-                const productsResponse = await axios.get('http://localhost:5001/api/products');
-                console.log('All products:', productsResponse.data);
+                console.log(userResponse.data.email)
+               // console.log(user.email) //wont work as state has not been set yet it will rerender after this function runs completely
+
+                // Fetch user products
+                const userProducts = await axios.get(`http://localhost:5001/api/products/${userResponse.data.email}`);
                 
-                // Filter products by owner ID
-                const userProducts = productsResponse.data.filter(
-                    product => product.ownerID === userId
-                );
-                
-                console.log('User products:', userProducts);
-                setProducts(userProducts);
+                console.log('User products:', userProducts.data.userproducts);
+                setProducts(userProducts.data.userproducts);
                 setLoading(false);
             } catch (err) {
                 console.error('Error fetching data:', err);
@@ -234,7 +234,7 @@ export default function Profile() {
                                         </span>
                                         <button 
                                             className="bg-gray-700 text-white px-3 py-1 rounded-lg hover:bg-gray-600"
-                                            onClick={() => {/* View product details */}}
+                                            onClick={() => {navigate(`/products/prodbyid/${product._id}`)}}
                                         >
                                             View
                                         </button>

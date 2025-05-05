@@ -5,7 +5,8 @@ const {requireAuth} = require('../middlewares/requireAuth')
 
 router.get('/' , productController.viewallProducts)
 router.post('/' , /* requireAuth , */ productController.createProduct)
-router.get('/:id', productController.getprodbyid )
+router.get('/:id', productController.getprodbyuser )
+router.get('/prodbyid/:id'    , productController.getprodbyid)
 router.put('/:id', requireAuth,  productController.updateProduct);
 router.delete('/:id', requireAuth ,productController.deleteProduct);
 

@@ -6,6 +6,7 @@ import Home from './components/Home.jsx'
 import Profile from './components/Profile.jsx'
 import Auction from './components/Auction.jsx'
 import Post from './components/addproduct.jsx'
+import ViewProduct from './components/viewproduct.jsx';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/auction" element={<Auction />} />
       <Route path="/post" element={<Post/>} />
+      <Route path="/products/prodbyid/:productId" element={<ViewProduct />} />
       <Route path="*" element={<div>Page Not Found</div>} />
     </Routes>
   </Router>

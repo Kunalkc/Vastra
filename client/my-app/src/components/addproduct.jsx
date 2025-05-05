@@ -35,14 +35,18 @@ export default function CreateProduct(){
         setimgurl(res.data.url); // Set Cloudinary URL to imageURL
     };
 
-    console.log(file)
-    console.log(usertext)
     // getting the updated position from the draggable and adding it to the layout data structure
     const handlePositionChange = (e, data, id) => {
+      console.log("position change called")
+      console.log(data)
         savelayout((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, x: data.left, y: data.top } : item))
+          prev.map((item) => (item.id === id ? { ...item, x: data.x, y: data.y } : item))
         );
     };
+
+    React.useEffect(() => {
+      console.log("Updated layout:", layout);
+    }, [layout]);
     
     // getting the updated size from the resizable and saving it in the layout data structure
     const handleResize = (id, size) => {
@@ -76,7 +80,7 @@ export default function CreateProduct(){
 
                 console.log('request to upload sent')
                 console.log(res.data.url)
-                return { ...item, img: res.data.url };
+                return { ...item,  url: res.data.url };
               } else {
                 return item;
               }
@@ -117,8 +121,8 @@ export default function CreateProduct(){
             type: 'image',   // We will support text as well later
             img:  URL.createObjectURL(file),
             alt: 'product image',
-            top:   100,      // Default position
-            left: 100,
+            x:   100,      // Default position
+            y: 100,
             width: 200,      // Default width
             height: 200,     // Default height
             zIndex:  imgzindex ,
@@ -133,13 +137,13 @@ export default function CreateProduct(){
             id : Date.now()-Math.floor(Math.random() * 100000),  // adding unique id so that we can delete the element later
             type: 'text',
             content: usertext,
-            top:   100,      // Default position
-            left: 100,
+            x: 100,      // Default position
+            y: 100,
             width: 200,      // Default width
             height: 200,     // Default height
             fontSize: fontSize,
             zIndex: zIndex  , 
-            fontfamily: font,
+            fontFamily: font,
             textColor: textColor
         }
         settext('')
@@ -284,7 +288,7 @@ export default function CreateProduct(){
             <Draggable
               key={item.id}
               nodeRef={nodeRef}
-              defaultPosition={{ x: item.left, y: item.top }}
+              defaultPosition={{ x: item.x, y: item.y }}
               cancel=".resize-handle"
               onStop={(e, data) => handlePositionChange(e, data, item.id)}
             >
@@ -330,7 +334,7 @@ export default function CreateProduct(){
                     </div>
                   )}
                 </ResizableBox>
-                <img src={"src/img/delete.svg"} width={35} height={35} className='absolute bottom-0 left-0 hidden group-hover:block scale-75 hover:scale-105' onClick={()=>deleteelement(item.id)}/>
+                <img src={"/public/img/delete.svg"} width={35} height={35} className='absolute bottom-0 left-0 hidden group-hover:block scale-75 hover:scale-105' onClick={()=>deleteelement(item.id)}/>
               </div>
              
             </Draggable>

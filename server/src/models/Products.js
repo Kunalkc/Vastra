@@ -33,8 +33,8 @@ const productSchema = new mongoose.Schema({
             enum: ["image", "text"],
             required : true
           },
-          top: { type: Number, required: true },
-          left: { type: Number, required: true },
+          x: { type: Number, required: true },
+          y: { type: Number, required: true },
           width: { type: Number },
           height: { type: Number },
           zIndex: {type: Number},
@@ -43,6 +43,7 @@ const productSchema = new mongoose.Schema({
           fontFamily: {     // only for text
             type: String,
             enum: [
+                "Arial",
               "Roboto",
               "Open Sans",
               "Lato",
