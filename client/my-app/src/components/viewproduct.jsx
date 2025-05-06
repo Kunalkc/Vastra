@@ -43,7 +43,7 @@ export default function ViewProduct(){
                 <img 
                   src={item.url} 
                   alt={item.alt || 'layout image'} 
-                  className="absolute w-full h-full object-cover rounded shadow pointer-events-none z-9"
+                  className="absolute w-full h-full object-cover rounded pointer-events-none z-9"
                       style={{
                         zIndex: item.zIndex,
                         top: item.y,

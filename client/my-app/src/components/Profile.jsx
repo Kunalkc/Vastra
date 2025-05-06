@@ -209,10 +209,10 @@ export default function Profile() {
                             >
                                 {/* Product image */}
                                 <div className="h-48 overflow-hidden">
-                                    {product.images && product.images.length > 0 ? (
+                                    {product.thumbnailurl ? (
                                         <img 
-                                            src={product.images[0].url} 
-                                            alt={product.images[0].alt || product.Title} 
+                                            src={product.thumbnailurl} 
+                                            alt={product.Title} 
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (

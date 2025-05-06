@@ -15,6 +15,7 @@ export default function CreateProduct(){
 
     const [fileselector, flip] = React.useState(false)
     const [textreciever , fliptext] = React.useState(false)
+    const [postmaker , flippost] = React.useState(false)
  
     const [bgColor, setBgColor] = React.useState('#a69c9c');  // state to store the bg color in set to #a69c9c by default
 
@@ -25,6 +26,14 @@ export default function CreateProduct(){
     const [fontSize, setSize] = React.useState(10)
 
     const [imgzindex , setzimg] = React.useState(0)
+
+
+    //Product information 
+    const [title , setTitle]  = React.useState('')
+    const [description, setDescription] = React.useState('')
+    const [forsale , setforsale] = React.useState(false)
+    const [thumbnail , setthumbnail] = React.useState(null)
+    const [thumbnailurl , seturlthumb] = React.useState('')
 
     const uploadImage = async () => {
 
@@ -87,14 +96,26 @@ export default function CreateProduct(){
             })
           );
         
+          
+
+          const formData1 = new FormData();
+          formData1.append('image', thumbnail); 
+          console.log('sending request to upload')
+          const res = await axios.post('http://localhost:5001/api/imageupload', formData1);
+          const thumbnailurl = res.data.url
+
+         
+
           console.log(updatedLayout)
+          console.log("thumbnailurl is: " , thumbnailurl)
 
         await axios.post('http://localhost:5001/api/products', {
           theme: bgColor,
           layout: updatedLayout,
           ownerID: "kunalchandel09@gmail.com",
-          description: 'A new product' ,
-          Title: 'New product'
+          description: description ,
+          Title: title,
+          thumbnailurl:  thumbnailurl
         });
     
         alert("Product saved successfully!");
@@ -157,6 +178,8 @@ export default function CreateProduct(){
     }
     
 
+    
+
     return(
         <div className="w-screen h-screen overflow-auto" style={{ backgroundColor: bgColor }}>
 
@@ -171,7 +194,7 @@ export default function CreateProduct(){
             />
                <button onClick={openFileselecter} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg">Add image</button>
                <button onClick={toggletext} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg" > Add text</button>
-               <button onClick={saveProduct} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg"> Post</button>
+               <button onClick={()=>flippost(prev=>(!prev))} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg"> Next</button>
                
             </div>
 
@@ -277,6 +300,52 @@ export default function CreateProduct(){
           </div>
           : <></>}          
   
+        { postmaker ? <div className="fixed left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] w-[70%] h-[70%] bg-gray-800 z-10000 rounded-xl flex flex-col justify-center items-center gap-5">
+            
+          <label className="w-full flex flex-col items-center gap-2">
+          <span className="mb-1 text-sm font-medium text-cyan-100">Title</span>    
+          <input
+             type="text"
+             value={title}
+             onChange={(e)=>setTitle(e.target.value)}  // sets what user types in out usertext statefield
+             className="border p-2 rounded-lg bg-cyan-50 w-[60%] z-100"
+             />  
+
+         </label>   
+
+        <label className="w-full flex flex-col items-center gap-2">
+        <span className="mb-1 text-sm font-medium text-cyan-100">Description</span>
+          <input
+             type="text"
+             value={description}
+             onChange={(e)=>setDescription(e.target.value)}  // sets what user types in out usertext statefield
+             className="border p-2 rounded-lg bg-cyan-50 w-[60%] z-100"
+             />  
+        </label>
+ 
+        <label className="flex flex-col items-center gap-2">
+        <span className="mb-1 text-sm font-medium text-cyan-100">Select Thumbnail</span>
+         <input
+            type="file"
+            onChange={(e) =>{setthumbnail(e.target.files[0]) } }  // saves the file user selects in the file state field
+            className=" border p-2 rounded-lg bg-cyan-50 z-100"
+           /> 
+        </label>
+  
+        <button onClick={saveProduct} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg"> Post</button>
+        
+       {/*  <label className="flex flex-row items-center gap-2">
+        <span className="mb-1 text-sm font-medium text-cyan-100">for sale</span>
+        <input
+            type="radio"
+
+        />
+        </label> */}
+
+        </div> : <></>
+
+        }
+        
           
         {/* looping over layout state to check new items and add them appropriately on the screen */}    
         {layout.map((item) => {

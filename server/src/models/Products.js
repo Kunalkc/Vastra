@@ -21,6 +21,9 @@ const productSchema = new mongoose.Schema({
     theme: {
         type: String, default: "#a69c9c",
     },
+    thumbnailurl: {
+        type: String,
+    },
     layout: [
         {
 
