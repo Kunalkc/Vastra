@@ -229,8 +229,9 @@ export default function Profile() {
                                         {product.description || 'No description available'}
                                     </p>
                                     <div className="flex justify-between items-center">
-                                        <span className="font-bold text-lg">
-                                            {product.currency} {product.price}
+                                        <span className="font-bold text-lg flex flex-row gap-1.5">
+                                            {product.likes ? product.likes.length : null} <p>likes</p>
+                                            
                                         </span>
                                         <button 
                                             className="bg-gray-700 text-white px-3 py-1 rounded-lg hover:bg-gray-600"

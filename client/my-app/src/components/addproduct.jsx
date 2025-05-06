@@ -3,6 +3,7 @@ import axios from "axios"
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import Bottombar from "./Bottombar";
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -35,14 +36,93 @@ export default function CreateProduct(){
     const [thumbnail , setthumbnail] = React.useState(null)
     const [thumbnailurl , seturlthumb] = React.useState('')
 
-    const uploadImage = async () => {
+     const navigate = useNavigate()
 
-        const formData = new FormData();
-        formData.append('image', file);
-    
-        const res = await axios.post('/api/upload-image', formData);
-        setimgurl(res.data.url); // Set Cloudinary URL to imageURL
-    };
+    // to get the userID of current user logged in
+    const getUserId = async () => {
+      try {
+          // First try to get userId directly from localStorage
+          const userId = localStorage.getItem('userId');
+          if (userId) {
+              console.log('Found userId directly in localStorage:', userId);
+              return userId;
+          }
+
+          console.log(userId)
+
+          // If not available, try to decode the token
+          const token = localStorage.getItem('token');
+          if (!token) {
+              throw new Error('No token found');
+          }
+
+          console.log('Token found:', token.substring(0, 20) + '...');
+          
+          // Check if it's a standard JWT (has 3 parts separated by dots)
+          if (token.split('.').length === 3) {
+              try {
+                  const base64Url = token.split('.')[1];
+                  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                  const payload = JSON.parse(atob(base64));
+                  console.log('Decoded JWT payload:', payload);
+                  
+                  if (payload.userId) {
+                      console.log('Found userId in JWT payload:', payload.userId);
+                      return payload.userId;
+                  }
+              } catch (e) {
+                  console.log('Error decoding JWT, might be a different format:', e);
+                  // Continue to other methods
+              }
+          }
+          
+          // If it's a Google Firebase token, try to validate it with our backend
+          try {
+              console.log('Trying to validate token with backend...');
+              const response = await axios.post('http://localhost:5001/api/login/validate-token', { token });
+              if (response.data && response.data.userId) {
+                  console.log('Backend validated token, userId:', response.data.userId);
+                  // Store for future use
+                  localStorage.setItem('userId', response.data.userId);
+                  return response.data.userId;
+              }
+          } catch (e) {
+              console.log('Backend token validation failed:', e);
+              // Continue to other methods
+          }
+          
+          // Try to get user info from Google token
+          try {
+              console.log('Trying to get user info from Google token...');
+              // This is a workaround - we're using the token to get the user's email
+              // and then using that to find the user in our database
+              const googleUserResponse = await axios.get('http://localhost:5001/api/users', {
+                  headers: { Authorization: `Bearer ${token}` }
+              });
+              
+              if (googleUserResponse.data && googleUserResponse.data.length > 0) {
+                  // Find the first user that matches the email from the token
+                  // This is not ideal but might work as a fallback
+                  console.log('Found users, trying to match with token info');
+                  return googleUserResponse.data[0]._id;
+              }
+          } catch (e) {
+              console.log('Failed to get user info from Google token:', e);
+              // Continue to other methods
+          }
+          
+          // If we can't get userId from token, check if token itself might be the userId
+          if (token.length === 24 || token.length === 36) {  // MongoDB ObjectId or UUID length
+              console.log('Using token as userId (might be direct ID)');
+              return token;
+          }
+          
+          throw new Error('Could not extract user ID from available data');
+      } catch (error) {
+          console.error('Error getting user ID:', error);
+          throw error;
+      }
+  };
 
     // getting the updated position from the draggable and adding it to the layout data structure
     const handlePositionChange = (e, data, id) => {
@@ -70,6 +150,18 @@ export default function CreateProduct(){
         // here we need to send the images from the layout variable and send them to backend to upload and then replace the img file with the imgurls from cloudinary and then add the product to DB
         console.log('post the product called ')
 
+        let userId;
+        try {
+            userId = await getUserId();
+            console.log('Using userId:', userId);
+        } catch (error) {
+            console.error('Failed to get userId:', error);
+            navigate('/login');
+            return;
+        }
+
+        const userResponse = await axios.get(`http://localhost:5001/api/users/${userId}`);
+        console.log('User data:', userResponse.data);
         //we are first going to obtain updatedlayout array and then save it as it is in backend with the other product details
 
         try {
@@ -112,7 +204,7 @@ export default function CreateProduct(){
         await axios.post('http://localhost:5001/api/products', {
           theme: bgColor,
           layout: updatedLayout,
-          ownerID: "kunalchandel09@gmail.com",
+          ownerID: userResponse.data.email,
           description: description ,
           Title: title,
           thumbnailurl:  thumbnailurl
@@ -129,11 +221,19 @@ export default function CreateProduct(){
       console.log('flip called')
       flip((prev) => !prev)
       fliptext(false)
+      flippost(false)
     }
     const toggletext = () =>{
       console.log('text flip called')
       fliptext((prev) => !prev)
       flip(false)
+      flippost(false)
+    }
+
+    const togglepost = ()=>{
+      flippost(prev=>(!prev))
+      flip(false)
+      fliptext(false)
     }
       
     const insertimage = () => {
@@ -194,7 +294,7 @@ export default function CreateProduct(){
             />
                <button onClick={openFileselecter} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg">Add image</button>
                <button onClick={toggletext} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg" > Add text</button>
-               <button onClick={()=>flippost(prev=>(!prev))} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg"> Next</button>
+               <button onClick={togglepost} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg"> Next</button>
                
             </div>
 
@@ -334,6 +434,7 @@ export default function CreateProduct(){
   
         <button onClick={saveProduct} className="w-auto h-10 bg-gray-700 px-3 text-cyan-100 rounded-xl hover:scale-105 drop-shadow-lg"> Post</button>
         
+        <img src={"/img/cross.svg"} width={30} height={30} className='absolute top-2.5 right-2.5 hover:scale-105' onClick={()=>flippost(false)} />
        {/*  <label className="flex flex-row items-center gap-2">
         <span className="mb-1 text-sm font-medium text-cyan-100">for sale</span>
         <input

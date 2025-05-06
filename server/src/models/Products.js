@@ -62,6 +62,13 @@ const productSchema = new mongoose.Schema({
           
         }
         }
+     ],
+
+     likes:[
+        {
+         likedby: {type:String},
+         likedat: {type: Date}
+        }
      ]
 })
 
