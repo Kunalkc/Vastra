@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Bottombar from './Bottombar'
 import Header from './Header'
+import FollowersList from './utils/getfollowers'
+import FollowingList from './utils/getfollowing'
 
 export default function Profile() {
     const [user, setUser] = useState(null)
@@ -12,6 +14,9 @@ export default function Profile() {
     
     const navigate = useNavigate()
 
+    const [following , openfollowinglist] = useState(false)
+    const [followers, openfollowerslist]  = useState(false)
+
 
     // Function to handle both regular JWT and Google Firebase tokens
     const getUserId = async () => {
@@ -20,6 +25,7 @@ export default function Profile() {
             const userId = localStorage.getItem('userId');
             if (userId) {
                 console.log('Found userId directly in localStorage:', userId);
+
                 return userId;
             }
 
@@ -153,10 +159,8 @@ export default function Profile() {
         <div className="min-h-screen w-screen bg-cyan-50 flex flex-col items-center pb-10">
             {/* Header with navigation */}
             <Header/>
-            
-            {/* Profile content */}
+ 
             <div className="mt-24 w-[90%] max-w-5xl">
-                {/* User info card */}
                 {user && (
                     <div className="bg-white rounded-xl shadow-md p-4 mb-8">
                         <div className="flex items-center">
@@ -175,11 +179,21 @@ export default function Profile() {
                             )}
                             
                             <div className="flex-1">
-                                <h2 className="text-2xl font-semibold">
-                                    {user.firstName && user.lastName 
-                                        ? `${user.firstName} ${user.lastName}` 
-                                        : user.username}
-                                </h2>
+                                <div className='flex flex-row gap-2 items-center justify-between'>
+                                    <h2 className="text-2xl font-semibold">
+                                        {user.firstName && user.lastName 
+                                            ? `${user.firstName} ${user.lastName}` 
+                                            : user.username}
+                                    </h2>
+                                   <div className='flex flex-row gap-5'>  
+                                    <h2 onClick={()=>openfollowinglist(true)} className='flex flex-row gap-1.5 text-xl opacity-50 hover:opacity-100'>
+                                        Following: {user.following.length}
+                                    </h2>
+                                    <h2 onClick={()=>openfollowerslist(true)} className='flex flex-row gap-1.5 text-xl opacity-50 hover:opacity-100'>
+                                        Followers: {user.followers.length}
+                                    </h2>
+                                    </div>
+                                </div>
                                 <div className="flex flex-wrap gap-x-6 text-gray-600">
                                     <span>{user.email}</span>
                                     {user.role && <span>• {user.role}</span>}
@@ -191,8 +205,43 @@ export default function Profile() {
                             </div>
                         </div>
                     </div>
+
+                    
                 )}
                 
+                {followers ? <div className='rounded-lg fixed w-[70%] h-[80%] top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] bg-gray-800 flex flex-col gap-4 justify-center items-center'>
+                   
+                    <img src={"/img/cross.svg"} width={30} height={30} className='absolute top-2.5 right-2.5 hover:scale-105' onClick={()=>openfollowerslist(false)} />
+                    <h1 className=' text-cyan-100 text-4xl'>Followers</h1>
+
+                   <div className='w-[80%] h-[80%] bg-gray-700 rounded-lg'>
+                   <FollowersList 
+                      userId = {user._id}
+                   />
+                   </div>
+                   
+                 </div> : <></>
+                    
+                    }
+
+                {following ? <div className='rounded-lg fixed w-[70%] h-[80%] top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] bg-gray-800 flex flex-col gap-4 justify-center items-center'>
+                   
+                    <img src={"/img/cross.svg"} width={30} height={30} className='absolute top-2.5 right-2.5 hover:scale-105' onClick={()=>openfollowinglist(false)} />
+                     
+                    <h1 className=' text-cyan-100 text-4xl'>Following</h1>
+
+                    <div className='w-[80%] h-[80%] bg-gray-700 rounded-lg'>
+
+                   <FollowingList
+                     userId = {user._id}
+                   />
+                    </div>
+                   
+                 </div> : <></>
+                    
+                    }
+
+
                 {/* Products showcase */}
                 <h2 className="text-3xl font-bold mb-4">My Products</h2>
                 

@@ -148,13 +148,15 @@ const userSchema = new mongoose.Schema({
     followers: [
         {
             id: {type:String, required: true},
-            since: {type: Date, default: Date.now}
+            since: {type: Date, default: Date.now},
+            profilepicurl: {type:String} 
         }
     ],
     following: [
         {
             id: {type:String, required: true},
-            since: {type: Date, default: Date.now}
+            since: {type: Date, default: Date.now},
+            profilepicurl: {type:String} 
         }
     ],
     designerProfile: {

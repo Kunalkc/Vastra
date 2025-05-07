@@ -152,3 +152,37 @@ exports.updateUser = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.getfollowers = async (req , res) => {
+
+    try{
+        const  userId  = req.params.id;
+        const thisuser = await user.findById(userId);
+
+        if(!thisuser){
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(thisuser.followers)
+
+    } catch (error) {
+        res,status(500).json({error: error.message})
+    }
+}
+
+exports.getfollowing = async (req , res) => {
+
+    try{
+        const  userId  = req.params.id;
+        const thisuser = await user.findById(userId);
+
+        if(!thisuser){
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(thisuser.following)
+
+    }catch (error) {
+        res,status(500).json({error: error.message})
+    }
+}

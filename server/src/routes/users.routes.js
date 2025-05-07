@@ -9,6 +9,9 @@ router.post('/', userController.createUser)
 router.get('/:id', userController.getUserById);
 router.put('/:id', requireAuth ,  userController.updateUser);
 router.delete('/:id', requireAuth ,userController.deleteUser);
+router.get('/followers/:id', userController.getfollowers)
+router.get('/following/:id', userController.getfollowing)
+
 
 router.patch('/:id/deactivate', userController.deactivateAccount);
 
