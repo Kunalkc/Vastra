@@ -7,7 +7,7 @@ import Header from './Header'
 const isloggedin = localStorage.getItem('token') !== null // if the value is null then it will store false and true in the alternative case
 
 console.log(isloggedin)
-export default function Home(){
+export default function Home(props){
 
     const [id , changeid] = useState('')
     const navigate = useNavigate()
@@ -18,7 +18,7 @@ export default function Home(){
             
            <div className='relative w-[90%] h-1/2 bg-black top-20 rounded-2xl'></div>
 
-           <Bottombar />
+           <Bottombar togglesearch = {props.togglesearch} />
 
 
         </div>

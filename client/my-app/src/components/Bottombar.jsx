@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 
-export default function bottombar(){
+export default function bottombar(props){
  
     const navigate = useNavigate()
     
@@ -122,14 +122,7 @@ export default function bottombar(){
                   navigate('/login');
                 }
               }}/>
-            <img src={"/img/search.svg"} width={35} height={35} className='hover:scale-105' onClick={async () => {
-              const isLoggedIn = await Checklogin();
-                if (isLoggedIn) {
-                  navigate('/profile');
-                } else {
-                  navigate('/login');
-                }
-              }}/>
+            <img src={"/img/search.svg"} width={35} height={35} className='hover:scale-105' onClick={()=>props.togglesearch()}/>
             <img src={"/img/profile.svg"} width={30} height={30} className='hover:scale-105' 
               onClick={async () => {
               const isLoggedIn = await Checklogin();

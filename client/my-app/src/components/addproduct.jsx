@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 
 
 
-export default function CreateProduct(){
+export default function CreateProduct(props){
 
     const [file , setfile] = React.useState(null)  // to upload a particular image to backend
     const [layout , savelayout] = React.useState([])  // in order to save the layout once the user is done arranging
@@ -514,7 +514,7 @@ export default function CreateProduct(){
   </div>
             
 
-            <Bottombar/>
+            <Bottombar togglesearch = {props.togglesearch}/>
         </div>
     )
 }

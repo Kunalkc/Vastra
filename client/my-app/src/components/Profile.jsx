@@ -6,7 +6,7 @@ import Header from './Header'
 import FollowersList from './utils/getfollowers'
 import FollowingList from './utils/getfollowing'
 
-export default function Profile() {
+export default function Profile(props) {
     const [user, setUser] = useState(null)
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
@@ -295,7 +295,7 @@ export default function Profile() {
                     </div>
                 )}
             </div>
-            <Bottombar />
+            <Bottombar togglesearch = {props.togglesearch}/>
         </div>
     )
 }
