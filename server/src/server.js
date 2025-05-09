@@ -8,7 +8,7 @@ const auctionRoutes  = require('./routes/auction.routes')
 const masterRoutes  = require('./routes/master.routes') 
 const loginroutes = require('./routes/login.routes')
 const imageupload = require('./routes/imgupload.routes')
-
+const searchroutes = require('./routes/search.routes')
 
 
 const cors = require('cors')
@@ -17,6 +17,7 @@ app.use(cors({origin: 'http://localhost:5173' , credentials: true}))
 
 app.use(express.json());
 
+app.use('/api/search', searchroutes)
 app.use('/api/login', loginroutes)
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes)
