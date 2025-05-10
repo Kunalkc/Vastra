@@ -5,6 +5,8 @@ import Bottombar from './Bottombar'
 import Header from './Header'
 import FollowersList from './utils/getfollowers'
 import FollowingList from './utils/getfollowing'
+import ProductTile from './subcomponents/productTile'
+import NameTile from './subcomponents/nameTile'
 
 export default function Profile(props) {
     const [user, setUser] = useState(null)
@@ -162,51 +164,13 @@ export default function Profile(props) {
  
             <div className="mt-24 w-[90%] max-w-5xl">
                 {user && (
-                    <div className="bg-white rounded-xl shadow-md p-4 mb-8">
-                        <div className="flex items-center">
-                            {user.profilePicture?.url ? (
-                                <img 
-                                    src={user.profilePicture.url} 
-                                    alt="Profile" 
-                                    className="w-16 h-16 rounded-full mr-4 object-cover"
-                                />
-                            ) : (
-                                <div className="w-16 h-16 rounded-full bg-gray-300 mr-4 flex items-center justify-center">
-                                    <span className="text-2xl text-gray-600">
-                                        {user.firstName?.charAt(0) || user.username?.charAt(0) || '?'}
-                                    </span>
-                                </div>
-                            )}
-                            
-                            <div className="flex-1">
-                                <div className='flex flex-row gap-2 items-center justify-between'>
-                                    <h2 className="text-2xl font-semibold">
-                                        {user.firstName && user.lastName 
-                                            ? `${user.firstName} ${user.lastName}` 
-                                            : user.username}
-                                    </h2>
-                                   <div className='flex flex-row gap-5'>  
-                                    <h2 onClick={()=>openfollowinglist(true)} className='flex flex-row gap-1.5 text-xl opacity-50 hover:opacity-100'>
-                                        Following: {user.following.length}
-                                    </h2>
-                                    <h2 onClick={()=>openfollowerslist(true)} className='flex flex-row gap-1.5 text-xl opacity-50 hover:opacity-100'>
-                                        Followers: {user.followers.length}
-                                    </h2>
-                                    </div>
-                                </div>
-                                <div className="flex flex-wrap gap-x-6 text-gray-600">
-                                    <span>{user.email}</span>
-                                    {user.role && <span>• {user.role}</span>}
-                                    {user.phoneNumber && <span>• {user.phoneNumber}</span>}
-                                    {user.address?.city && user.address?.country && (
-                                        <span>• {user.address.city}, {user.address.country}</span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     
+                    <NameTile
+                      user = {user}
+                      openfollowinglist = {openfollowinglist}
+                      openfollowerslist = {openfollowerslist}
+                    />
+
                 )}
                 
                 {followers ? <div className='rounded-lg fixed w-[70%] h-[80%] top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] bg-gray-800 flex flex-col gap-4 justify-center items-center'>
@@ -252,45 +216,12 @@ export default function Profile(props) {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {products.map(product => (
-                            <div 
-                                key={product._id || product.ID} 
-                                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-                            >
-                                {/* Product image */}
-                                <div className="h-48 overflow-hidden">
-                                    {product.thumbnailurl ? (
-                                        <img 
-                                            src={product.thumbnailurl} 
-                                            alt={product.Title} 
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                                            <span className="text-gray-400">No image</span>
-                                        </div>
-                                    )}
-                                </div>
-                                
-                                {/* Product details */}
-                                <div className="p-4">
-                                    <h3 className="text-xl font-semibold mb-2">{product.Title}</h3>
-                                    <p className="text-gray-600 mb-2 line-clamp-2">
-                                        {product.description || 'No description available'}
-                                    </p>
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-bold text-lg flex flex-row gap-1.5">
-                                            {product.likes ? product.likes.length : null} <p>likes</p>
-                                            
-                                        </span>
-                                        <button 
-                                            className="bg-gray-700 text-white px-3 py-1 rounded-lg hover:bg-gray-600"
-                                            onClick={() => {navigate(`/products/prodbyid/${product._id}`)}}
-                                        >
-                                            View
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+
+                            <ProductTile 
+                            key={product._id} 
+                            product = {product}
+                            />
+                           
                         ))}
                     </div>
                 )}

@@ -96,7 +96,12 @@ console.log("searchbar is: " , props.isopen)
               }
 
               if(users){
-                return(<div className="flex flex-row gap-1.5 h-10 justify-center items-center bg-gray-800 px-4 rounded-md hover:scale-105">
+                return(<div 
+                  onClick={() => {
+                    navigate(`/user/${item._id}`);
+                    props.togglebar()
+                  }}
+                  className="flex flex-row gap-1.5 h-10 justify-center items-center bg-gray-800 px-4 rounded-md hover:scale-105 cursor-pointer">
                
                     <img
                        src={item.profilePicture}

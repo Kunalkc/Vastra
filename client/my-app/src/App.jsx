@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './components/Login.jsx'
 import Home from './components/Home.jsx'
 import Profile from './components/Profile.jsx'
+import OtherUserProfile from './components/otherprofile.jsx'
 import Auction from './components/Auction.jsx'
 import Post from './components/addproduct.jsx'
 import ViewProduct from './components/viewproduct.jsx';
@@ -33,6 +34,7 @@ export default function App() {
       <Route path="/login" element= {<Login />} />
       <Route path="/home" element={<Home togglesearch = {flipsearchbar}/>} />
       <Route path="/profile" element={<Profile togglesearch = {flipsearchbar} />} />
+      <Route path="/user/:userid" element={<OtherUserProfile togglesearch = {flipsearchbar} />} />
       <Route path="/auction" element={<Auction togglesearch = {flipsearchbar}/>} />
       <Route path="/post" element={<Post togglesearch = {flipsearchbar}/>} />
       <Route path="/products/prodbyid/:productId" element={<ViewProduct togglesearch = {flipsearchbar} />} />
