@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios'
 
 
-export default function ViewProduct(){
+export default function ViewProduct(props){
 
      const { productId } = useParams()
      const [product, setProduct] = React.useState(null)
@@ -78,7 +78,7 @@ export default function ViewProduct(){
 ))}
             
             
-        <Bottombar/>
+        <Bottombar togglesearch = {props.togglesearch}/>
     </div>
        )
 

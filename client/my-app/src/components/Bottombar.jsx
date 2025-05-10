@@ -131,6 +131,7 @@ export default function bottombar(props){
                 } else {
                   navigate('/login');
                 }
+              
               }}/>
           {/*   <a href="https://iconscout.com/icons/auction" class="text-underline font-size-sm" target="_blank">Auction</a> by <a href="https://iconscout.com/contributors/jemismali" class="text-underline font-size-sm" target="_blank">Jemis Mali</a> */}
          </div>       
