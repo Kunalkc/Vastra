@@ -189,9 +189,95 @@ exports.getfollowing = async (req , res) => {
 
 
 exports.addFollower = async (req , res) => {
+    const { loggeduserid, userid  } = req.body;
 
+    try {
+      if (!loggeduserid || !userid) {
+        return res.status(400).json({ message: "Missing followerId or followeeId" });
+      }
+  
+      const follower = await user.findById(loggeduserid);
+      const followee = await user.findById(userid);
+  
+      if (!follower || !followee) {
+        return res.status(404).json({ message: "User(s) not found" });
+      }
+  
+      if (!followee.followers.some(f => f.id === loggeduserid)) {
+        followee.followers.push({
+          id: loggeduserid,
+        });
+        await followee.save();
+      }
+
+      if (!follower.following.some(f => f.id === userid)) {
+        follower.following.push({
+          id: userid,
+        });
+        await follower.save();
+      }
+  
+      res.json({ message: "Followed successfully" });
+  
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error", error: err.message });
+    }
 }
 
 exports.removefollower = async (req , res ) => {
-    
+    const { loggeduserid, userid } = req.body;
+
+    try {
+      if (!loggeduserid || !userid) {
+        return res.status(400).json({ message: "Missing followerId or followeeId" });
+      }
+  
+      const follower = await user.findById(loggeduserid);
+      const followee = await user.findById(userid);
+  
+      if (!follower || !followee) {
+        return res.status(404).json({ message: "User(s) not found" });
+      }
+  
+      followee.followers = followee.followers.filter(f => f.id !== loggeduserid);
+      await followee.save();
+  
+      follower.following = follower.following.filter(f => f.id !== userid);
+      await follower.save();
+  
+      res.json({ message: "Unfollowed successfully" });
+  
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error", error: err.message });
+    }
+}
+
+exports.checkififollowthisperson = async(req , res) => {
+    const { loggeduserid, userid } = req.body;
+
+    try {
+      if (!loggeduserid || !userid) {
+        return res.status(400).json({ message: "Missing followerId or followeeId" });
+      }
+  
+      const checkfor = await user.findById(loggeduserid);
+      const followee = await user.findById(userid);
+  
+      if (!checkfor || !followee) {
+        return res.status(404).json({ message: "User(s) not found" });
+      }
+  
+      const follows = checkfor.following.some(f => f.id === userid);
+
+     return res.status(200).json({
+       message: follows ? "You follow this person" : "You don't follow this person",
+       follows: follows
+     });
+
+    }catch (err) {
+        console.error("Error checking follow status:", err);
+        return res.status(500).json({ message: "Server error", error: err.message });
+      }
 }

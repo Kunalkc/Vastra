@@ -20,25 +20,74 @@ export default function otheruserprofile(props){
     const [followers, openfollowerslist]  = useState(false)
     const [user, setUser] = useState(null)
     const [products, setProducts] = useState([])
-
+    const [follow , setfollow] = useState(false) // does the person visiting this profile follows this user
+    
+ 
     // this user page needs to verify if the current user is the same as the one he is trying to open if so then open profile page , or else otherprofile interface and if not logged in then also 
     const [ownProfile , setProfindicator] = useState(false)
      
     console.log('user id of user that is logged in is',loggeduserid , 'and id of user we are trying to open is' , userid , ' and result of whether they equate is' , ownProfile)
-  
+    console.log('do i follow this user' , follow)
+    const navigate = useNavigate()
+
+
     useEffect(()=>{
        if(userid === loggeduserid){
         setProfindicator(true)
        }
     }, [userid,loggeduserid])
     
-    const navigate = useNavigate()
+    useEffect(() => {
+        const checkFollowStatus = async () => {
+          try {
+            const res = await axios.post('http://localhost:5001/api/users/checkfollow', {
+              loggeduserid,
+              userid,
+            });
+            setfollow(res.data.follows);
+          } catch (err) {
+            console.error("Error checking follow status:", err);
+          }
+        };
+    
+        if (loggeduserid && userid) {
+          checkFollowStatus();
+        }
+      }, [loggeduserid, userid]);
+
+    
 
     if(ownProfile){
         navigate('/profile')
     }
 
-    
+    const iwanttofollow = async()=>{
+       console.log('i want to follow called')
+       try{
+         const res = await axios.post('http://localhost:5001/api/users/follow', {
+            loggeduserid,
+            userid,
+         } )
+
+         console.log(res.data.message);
+         setfollow(true)
+       }catch(err){
+        console.error("error following this person" , err)
+       }
+    }
+
+    const iwanttounfollow = async () => {
+        console.log('i want to unfollow called')
+        try{
+            const res = await axios.post('http://localhost:5001/api/users/unfollow', {
+               loggeduserid,
+               userid,
+            } )
+            setfollow(false)
+          }catch(err){
+           console.error("error following this person" , err)
+          }
+    }
 
     // using the user id in params to fetch details of the user
     useEffect(() => {
@@ -55,7 +104,7 @@ export default function otheruserprofile(props){
             }
         }
         fetchUserData();
-    }, [navigate]);
+    }, [navigate,follow]);
 
 
     return(
@@ -71,6 +120,9 @@ export default function otheruserprofile(props){
                   openfollowinglist = {openfollowinglist}
                   openfollowerslist = {openfollowerslist}
                   selfprofile = {ownProfile}
+                  follow = {follow}
+                  iwanttofollow = {iwanttofollow}
+                  iwanttounfollow = {iwanttounfollow}
                 />
 
             )}

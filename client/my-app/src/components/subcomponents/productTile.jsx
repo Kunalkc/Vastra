@@ -44,7 +44,8 @@ export default function productTile(props) {
             window.alert("Failed to delete product. Please try again.");
             throw err;
         }
-
+        
+        
     }
 
 return(
