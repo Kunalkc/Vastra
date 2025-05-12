@@ -222,6 +222,7 @@ export default function Profile(props) {
                             key={product._id} 
                             product = {product}
                             user = {user}
+                            selfprofile = {true}
                             />
                            
                         ))}

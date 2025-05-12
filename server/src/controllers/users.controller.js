@@ -186,3 +186,12 @@ exports.getfollowing = async (req , res) => {
         res,status(500).json({error: error.message})
     }
 }
+
+
+exports.addFollower = async (req , res) => {
+
+}
+
+exports.removefollower = async (req , res ) => {
+    
+}

@@ -29,6 +29,24 @@ export default function productTile(props) {
         }
     }, [props.product, props.productid]);
 
+
+    const deleteproduct = async (PID)=>{
+
+        const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+        if (!confirmDelete) return;
+    
+
+        try{
+             const res = await axios.delete(`http://localhost:5001/api/products/${PID}`)
+             window.alert("Product deleted successfully!");
+        }catch(err){
+            console.log("couldn't delete product" , err)
+            window.alert("Failed to delete product. Please try again.");
+            throw err;
+        }
+
+    }
+
 return(
 
    <div 
@@ -71,12 +89,24 @@ return(
                       {product.likes ? product.likes.length : null} <p>likes</p>
                       
                   </span>
-                  <button 
-                      className="bg-gray-700 text-white px-3 py-1 rounded-lg hover:bg-gray-600"
-                      onClick={() => {navigate(`/products/prodbyid/${product._id}`)}}
-                  >
-                      View
-                  </button>
+                  <div className="flex flex-row gap-4 justify-center items-center">
+
+                     <button 
+                         className="bg-gray-700 text-white px-3 py-1 rounded-lg hover:bg-gray-600"
+                         onClick={() => {navigate(`/products/prodbyid/${product._id}`)}}
+                     >
+                         View
+                     </button>
+
+                  {props.selfprofile ?   
+                   <img src= "/img/trash.png"
+                    width={20}
+                    height={20}
+                    className="hover:scale-105"
+                    onClick={()=>deleteproduct(product._id)}
+                    /> : <></>}
+
+                  </div>
               </div>
           </div>
     </div>

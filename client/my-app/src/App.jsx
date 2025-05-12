@@ -13,7 +13,7 @@ import Searchtab from './components/search.jsx';
 export default function App() {
 
 
-  const [searchbar , togglesearchbar] = useState(true)
+  const [searchbar , togglesearchbar] = useState(false)
 
   const flipsearchbar = () => {
     togglesearchbar(prev=>(!prev))

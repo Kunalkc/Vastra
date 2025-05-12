@@ -8,6 +8,6 @@ router.post('/' , /* requireAuth , */ productController.createProduct)
 router.get('/:id', productController.getprodbyuser )
 router.get('/prodbyid/:id'    , productController.getprodbyid)
 router.put('/:id', requireAuth,  productController.updateProduct);
-router.delete('/:id', requireAuth ,productController.deleteProduct);
+router.delete('/:id', productController.deleteProduct);
 
 module.exports = router

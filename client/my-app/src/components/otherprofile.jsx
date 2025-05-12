@@ -123,6 +123,7 @@ export default function otheruserprofile(props){
                         key={product._id} 
                         product = {product}
                         user = {user}
+                        selfprofile = {ownProfile}
                         />
                        
                     ))}
