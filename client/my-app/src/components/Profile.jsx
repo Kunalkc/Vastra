@@ -169,6 +169,7 @@ export default function Profile(props) {
                       user = {user}
                       openfollowinglist = {openfollowinglist}
                       openfollowerslist = {openfollowerslist}
+                      selfprofile = {true}
                     />
 
                 )}
@@ -220,6 +221,7 @@ export default function Profile(props) {
                             <ProductTile 
                             key={product._id} 
                             product = {product}
+                            user = {user}
                             />
                            
                         ))}

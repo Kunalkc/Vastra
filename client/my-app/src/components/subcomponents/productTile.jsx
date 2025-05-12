@@ -3,11 +3,13 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom'
 
 
+
 // we want to either pass the whole product file to props or just the id depending upon from where the component is being called 
 
 export default function productTile(props) {
 
     const [product , setProduct]  = React.useState({})
+    const navigate = useNavigate()
 
     React.useEffect(() => {
         if (props.product) {
@@ -46,11 +48,21 @@ return(
                       <span className="text-gray-400">No image</span>
                   </div>
               )}
+
+              
           </div>
           
           {/* Product details */}
           <div className="p-4">
-              <h3 className="text-xl font-semibold mb-2">{product.Title}</h3>
+          <p className="text-sm cursor-pointer hover:text-cyan-800"
+               onClick={() => {
+                console.log("navigating through the title");
+                navigate(`/user/${props.user._id}`);
+              }}
+          >{props.user.username}</p>
+
+
+              <h2 className="text-xl font-semibold mb-2">{product.Title}</h2>
               <p className="text-gray-600 mb-2 line-clamp-2">
                   {product.description || 'No description available'}
               </p>

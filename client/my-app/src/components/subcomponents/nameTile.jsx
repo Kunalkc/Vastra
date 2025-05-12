@@ -42,8 +42,9 @@ export default function titleTile(props){
                                                     Followers: {user.followers.length}
                                                 </h2>
                                            </div>
-
-                                           <button className="bg-gray-600 text-cyan-100 rounded-lg hover:scale-103">Edit Profile</button>
+                                      {props.selfprofile ?  <button className="bg-gray-600 text-cyan-100 rounded-lg hover:scale-103">Edit Profile</button>       :
+                                           <button className="bg-gray-600 text-cyan-100 rounded-lg hover:scale-103">Follow</button> 
+                                        }
                                    </div>
                                 </div>
 
