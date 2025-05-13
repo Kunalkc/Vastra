@@ -14,11 +14,17 @@ export default function Profile(props) {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     
+    const [render , rerender] = useState(false)
+
     const navigate = useNavigate()
 
     const [following , openfollowinglist] = useState(false)
     const [followers, openfollowerslist]  = useState(false)
 
+
+    const rerenderstate = ()=>{
+        rerender(prev => !prev)
+    }
 
     // Function to handle both regular JWT and Google Firebase tokens
     const getUserId = async () => {
@@ -223,6 +229,7 @@ export default function Profile(props) {
                             product = {product}
                             user = {user}
                             selfprofile = {true}
+                            rerenderstate = {rerenderstate}
                             />
                            
                         ))}

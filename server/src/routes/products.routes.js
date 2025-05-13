@@ -10,4 +10,8 @@ router.get('/prodbyid/:id'    , productController.getprodbyid)
 router.put('/:id', requireAuth,  productController.updateProduct);
 router.delete('/:id', productController.deleteProduct);
 
+router.post('/like' , productController.userlikespost)
+router.post('/unlike' , productController.userunlikespost)
+router.post('/checklike' , productController.checkifliked)
+
 module.exports = router

@@ -1,6 +1,8 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'
 
 const getUserId = async () => {
+    
     try {
         // First try to get userId directly from localStorage
         const userId = localStorage.getItem('userId');

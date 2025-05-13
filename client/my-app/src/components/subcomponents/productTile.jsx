@@ -1,14 +1,16 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom'
-
+import getUserId from "../utils/getuserid";
 
 
 // we want to either pass the whole product file to props or just the id depending upon from where the component is being called 
+const loggeduserid = await getUserId()
 
 export default function productTile(props) {
 
     const [product , setProduct]  = React.useState({})
+    const [userlikesit , userlikes] = React.useState(false)
     const navigate = useNavigate()
 
     React.useEffect(() => {
@@ -27,8 +29,32 @@ export default function productTile(props) {
             };
             fetchProduct();
         }
-    }, [props.product, props.productid]);
+    }, [props.product, props.productid, userlikesit]);
 
+
+    React.useEffect(()=>{
+       
+        const checklikestatus = async () => {
+            try{
+                const res = await axios.post("http://localhost:5001/api/products/checklike",{
+                    productid: product._id,
+                    userid : loggeduserid
+                })
+    
+                userlikes(res.data.likes)
+    
+            }catch(err)
+            {
+                console.log("havent liked the  product" , err)
+            }
+        }
+
+        if (loggeduserid && product._id) {
+            checklikestatus();
+          }
+        
+
+    })
 
     const deleteproduct = async (PID)=>{
 
@@ -39,13 +65,52 @@ export default function productTile(props) {
         try{
              const res = await axios.delete(`http://localhost:5001/api/products/${PID}`)
              window.alert("Product deleted successfully!");
+             props.rerenderstate()
         }catch(err){
             console.log("couldn't delete product" , err)
             window.alert("Failed to delete product. Please try again.");
             throw err;
         }
         
-        
+    }
+
+    const fetchProduct = async () => {
+        try {
+            const res = await axios.get(`http://localhost:5001/api/products/prodbyid/${product._id}`);
+            setProduct(res.data);
+        } catch (err) {
+            console.error('Error fetching updated product:', err);
+        }
+    };
+
+    const like = async () =>{
+        try{
+
+            const res = await axios.post("http://localhost:5001/api/products/like" , {
+                productid: product._id,
+                userid : loggeduserid
+            })
+            userlikes(true)
+            fetchProduct()
+        }catch(err){
+
+            console.log("couldn't like product" , err)
+        }
+    }
+
+    const unlike = async () => {
+        try{
+
+            const res = await axios.post("http://localhost:5001/api/products/unlike" , {
+                productid: product._id,
+                userid : loggeduserid
+            })
+            userlikes(false)
+            fetchProduct()
+        }catch(err){
+
+            console.log("couldn't like product" , err)
+        }
     }
 
 return(
@@ -87,7 +152,7 @@ return(
               </p>
               <div className="flex justify-between items-center">
                   <span className="font-bold text-lg flex flex-row gap-1.5">
-                      {product.likes ? product.likes.length : null} <p>likes</p>
+                     { userlikesit ? <img onClick={unlike} src={"/img/blackheart.svg"} width={25} height={8} className="hover:scale-105"/> :<img onClick={like} src={"/img/heart.svg"} width={25} height={8} className="hover:scale-105"/>}  {product.likes ? product.likes.length : null} 
                       
                   </span>
                   <div className="flex flex-row gap-4 justify-center items-center">

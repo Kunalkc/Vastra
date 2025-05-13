@@ -104,3 +104,84 @@ exports.getprodbyuser = async (req,res) => {
      }
 
 }
+
+
+
+exports.userlikespost = async (req, res) => {
+  const { userid, productid } = req.body;
+
+  console.log("in user likes",userid, productid)
+  try {
+    if (!userid || !productid) {
+      return res.status(400).json({ message: "Missing userid or productid" });
+    }
+
+    const thisproduct = await product.findById(productid);
+    if (!thisproduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    if (!thisproduct.likes.some(f => f.likedby === userid)) {
+      thisproduct.likes.push({ likedby: userid });
+      await thisproduct.save();
+    }
+
+    res.json({ message: "Post liked successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Couldn't like post", error: err.message });
+  }
+};
+
+
+exports.userunlikespost = async (req, res) => {
+  const { userid, productid } = req.body;
+  console.log("unlikes",userid, productid)
+  try {
+    if (!userid || !productid) {
+      return res.status(400).json({ message: "Missing userid or productid" });
+    }
+
+    const thisproduct = await product.findById(productid);
+    if (!thisproduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    thisproduct.likes = thisproduct.likes.filter(f => f.likedby !== userid);
+    await thisproduct.save();
+
+    res.json({ message: "Post unliked successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Couldn't unlike post", error: err.message });
+  }
+};
+
+exports.checkifliked = async (req ,res) => {
+  const { userid, productid } = req.body;
+
+  console.log("liked" , userid , productid)
+  try {
+    if (!userid || !productid) {
+      return res.status(400).json({ message: "Missing userid or productid" });
+    }
+
+    const thisproduct = await product.findById(productid);
+    if (!thisproduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const likes = thisproduct.likes.some(f => f.likedby === userid)
+
+     return res.status(200).json({
+       message: likes ? "You like this post" : "You don't like this post",
+       likes: likes
+     })
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Couldn't get info", error: err.message });
+  }
+}
