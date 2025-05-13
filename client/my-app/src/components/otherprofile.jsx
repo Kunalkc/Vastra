@@ -10,10 +10,20 @@ import ProductTile from './subcomponents/productTile'
 import NameTile from './subcomponents/nameTile'
 import getUser from './utils/getuserid'
 
-const loggeduserid = await getUser()
 
 export default function otheruserprofile(props){
-    
+  
+  const [loggeduserid, setLoggedUserId] = React.useState(null);
+
+    React.useEffect(() => {
+        const fetchId = async () => {
+            const id = await getUser();
+            setLoggedUserId(id);
+        };
+        fetchId();
+    }, []);
+
+
     const { userid } = useParams()
 
     const [following , openfollowinglist] = useState(false)

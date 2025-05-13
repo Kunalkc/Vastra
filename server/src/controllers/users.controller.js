@@ -125,9 +125,10 @@ exports.deactivateAccount = async (req, res) => {
 // update user profile
 exports.updateUser = async (req, res) => {
     try {
-        const  userId  = req.user.userId;
-        const { firstName, lastName, email, phoneNumber, address, profilePicture , currencypreference } = req.body;
-
+        const  userId  = req.params.id;;
+        const { firstName, lastName, phoneNumber ,profilePicture } = req.body;
+        
+        console.log(firstName, lastName, phoneNumber ,profilePicture )
         // Find user by userId
         const thisuser = await user.findById(userId);
 
@@ -136,13 +137,10 @@ exports.updateUser = async (req, res) => {
         }
 
         // Update profile fields
-        thisuser.firstName = firstName || thisuser.firstName;
-        thisuser.lastName = lastName || thisuser.lastName;
-        thisuser.email = email || thisuser.email;
-        thisuser.phoneNumber = phoneNumber || thisuser.phoneNumber;
-        thisuser.address = address || thisuser.address;
-        thisuser.profilePicture = profilePicture || thisuser.profilePicture;
-        thisuser.currencypreference = currencypreference || thisuser.currencypreference
+       if(firstName){ thisuser.firstName = firstName || thisuser.firstName;}
+       if(lastName){ thisuser.lastName = lastName || thisuser.lastName;}
+       if(phoneNumber){ thisuser.phoneNumber = phoneNumber || thisuser.phoneNumber;}
+       if(profilePicture){ thisuser.profilePicture = profilePicture || thisuser.profilePicture;}
 
         // Save the updated user
         await thisuser.save();

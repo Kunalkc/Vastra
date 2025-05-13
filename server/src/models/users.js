@@ -54,8 +54,7 @@ const userSchema = new mongoose.Schema({
         default: "buyer",
     },
     profilePicture: {
-        url: String,
-        public_id: String
+        type: String,
     },
     isVerified: {
         type: Boolean,

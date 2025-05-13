@@ -5,9 +5,20 @@ import getUserId from "../utils/getuserid";
 
 
 // we want to either pass the whole product file to props or just the id depending upon from where the component is being called 
-const loggeduserid = await getUserId()
+
 
 export default function productTile(props) {
+
+
+    const [loggeduserid, setLoggedUserId] = React.useState(null);
+
+    React.useEffect(() => {
+        const fetchId = async () => {
+            const id = await getUserId();
+            setLoggedUserId(id);
+        };
+        fetchId();
+    }, []);
 
     const [product , setProduct]  = React.useState({})
     const [userlikesit , userlikes] = React.useState(false)
