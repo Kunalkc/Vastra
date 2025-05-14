@@ -6,7 +6,8 @@ const {requireAuth} = require('../middlewares/requireAuth')
 
 router.get('/' , auctionController.getallitemsonauction)
 router.get('/:id' , auctionController.getitembyid)
-router.post('/', requireAuth ,  auctionController.setproductonsale)
+router.post('/',  auctionController.setproductonsale)
+router.put('/', auctionController.handlebid )
 
 
 module.exports = router

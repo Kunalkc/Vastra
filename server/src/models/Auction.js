@@ -11,18 +11,10 @@ const auctionSchema = new mongoose.Schema({
     totalbids: {
         type : Number,
     },
-    itemID: {
-        type: String,
-        required : true,
-        unique: true,
-        required: true,
-    },
-    itemowner: {
-        type: String,
-        required : true,
-        unique: true,
-        required: true,
-    }
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'product' // No need to import User model here
+      }
 
 })
 

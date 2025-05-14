@@ -60,7 +60,7 @@ const FollowersList = (props) => {
                 onClick={() => handleUserClick(follower._id)}
             >
                 <img 
-                        src={`${follower.profilepicurl}`}
+                        src={`${follower.profilePicture}`}
                         className='rounded-lg object-cover w-10 h-10'
                         alt={ 'image'}
                         width={30}

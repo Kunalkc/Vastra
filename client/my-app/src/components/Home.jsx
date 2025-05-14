@@ -16,7 +16,11 @@ export default function Home(props){
         <div className='bg-cyan-50 h-screen w-screen flex flex-col items-center'>
            <Header/>
             
-           <div className='relative w-[90%] h-1/2 bg-black top-20 rounded-2xl'></div>
+           <div
+           onClick={()=>navigate('/auction')} 
+           className='relative w-[90%] h-1/8 bg-black top-20 rounded-2xl flex flex-col justify-center items-center hover:scale-102'>
+               <h1 className='text-center text-4xl text-cyan-100'>AUCTION FOR SELECT PRODUCTS LIVE NOW</h1>
+           </div>
 
            <Bottombar togglesearch = {props.togglesearch} />
 
