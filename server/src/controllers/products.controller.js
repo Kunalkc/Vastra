@@ -92,8 +92,10 @@ exports.getprodbyuser = async (req,res) => {
           const userID = req.params.id
           const userproducts = await product.find({ownerID : userID})
 
+          // Return empty array instead of 404 when user has no products
+          // This allows the client to handle the empty state properly
           if(userproducts.length ===  0){
-            return res.status(404).json({message: "user has not added any products yet"})
+            return res.status(200).json({message: "user has not added any products yet", userproducts: []})
           }
 
           res.json({message:"products fetched successfully" , userproducts })

@@ -15,6 +15,8 @@ export default function Login(){
     const [email , changeid] = useState('')
     const [password , changepassword] = useState('')
     const [error, setError] = useState('')
+    const [sign , setsignup] = useState(false)
+    const [username , setusername] = useState('')
 
     console.log(email , password)
 
@@ -22,25 +24,49 @@ export default function Login(){
 
     const handlesubmit = async(e)=> {
 
-       e.preventDefault();
-       console.log("handle submit called")
+      e.preventDefault();
+      console.log("handle submit called")
 
-       try {
-        const res = await axios.post('http://localhost:5001/api/login/login', {
+      try {
+       const res = await axios.post('http://localhost:5001/api/login/login', {
+         email,
+         password
+       });
+ 
+       console.log(res.data.token)
+       localStorage.setItem('token', res.data.token);
+
+       if (res.data.curruser && res.data.curruser._id) {
+        localStorage.setItem('userId', res.data.curruser._id);
+      }
+
+       alert('Login successful!');
+       navigate('/home')
+
+      }catch (err) {
+       setError(err.response?.data?.message || 'Login failed');
+       alert(err.response?.data?.message )
+      }
+   }
+
+    const signup = async(e)=>{
+        
+      try{
+        const res = await axios.post('http://localhost:5001/api/users/' , {
           email,
-          password
-        });
-  
-        localStorage.setItem('token', res.data.token);
-        alert('Login successful!');
-        navigate('/home')
+          password,
+          username,
+        })
 
-       }catch (err) {
-        setError(err.response?.data?.message || 'Login failed');
+        console.log(res)
+        alert('signup successful!');
+
+      }catch(err)
+      {
+        setError(err.response?.data?.message || 'signup failed');
         alert(err.response?.data?.message )
-       }
+      }
     }
-
 
     const handleGoogleLogin = async () => {
         try {
@@ -119,7 +145,21 @@ export default function Login(){
                  onChange={(e) => changepassword(e.target.value)}
                  className='bg-amber-50'
              />
-             <button type='submit' onClick = {handlesubmit} className='bg-gray-700 text-cyan-100 rounded-xl w-1/2 self-center'>Login</button>
+             { sign ?  <input
+                 type='text'
+                 placeholder='username'
+                 value={username}
+                 onChange={(e) => setusername(e.target.value)}
+                 className='bg-amber-50'
+             /> : <></>
+
+             }
+             <div className='flex flex-row gap-4'>
+           { sign ? <></>: <button type='submit' onClick = {handlesubmit} className='bg-gray-700 text-cyan-100 rounded-xl w-1/2 self-center'>Login</button>}
+            { sign ? <button type='button' onClick = {()=>setsignup(false)} className='bg-gray-700 text-cyan-100 rounded-xl w-1/2 self-center'>back</button> : <></>}
+          { sign ? <></> : <button  type="button" onClick = {()=>setsignup(true)} className='bg-gray-700 text-cyan-100 rounded-xl w-1/2 self-center'>Sign Up </button>}
+          {  sign ?  <button  type="button" onClick = {signup} className='bg-gray-700 text-cyan-100 rounded-xl w-1/2 self-center'>Sign Up </button> : <></>}
+             </div>
            </form>
 
            <div className="mt-2">
